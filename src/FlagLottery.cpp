@@ -1,8 +1,10 @@
+#include "Game.hpp"
 #include "FlagLottery.hpp"
 #include "ReelCtrl.hpp"
 #include <string_view>
 
-vector<Flag> load_flags(const toml::table& tables, string_view key){
+
+vector<Flag> FlagLottery::load_flags(const toml::table& tables, string_view key){
     vector<Flag> flags;
     auto arr = tables[key].as_array();
     for (const auto& node : *arr){
@@ -18,6 +20,13 @@ vector<Flag> load_flags(const toml::table& tables, string_view key){
     }
     return flags;
 }
+
+void FlagLottery::init(){
+    ifstream flag_tables(GameConst::rootPath / "asset/config/flag_table.toml");
+    auto tomlTable = toml::parse(flag_tables);
+    roleFlags = load_flags(tomlTable, "role_flag");
+    bonusFlags = load_flags(tomlTable, "bonus_flag");
+};
 
 optional<Flag> FlagLottery::draw(){
     int num = dist(rng);
@@ -43,5 +52,4 @@ optional<Flag> FlagLottery::draw(){
     }
 
     return miss;
-    //nullopt
 }

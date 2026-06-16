@@ -1,17 +1,37 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.16)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+# Disable X11
+set(SDL_X11_XTEST OFF CACHE BOOL "" FORCE)
+
 project(ANGEL12)
 
-# src
 set(SOURCES
     src/main.cpp
     src/ReelCtrl.cpp
     src/FlagLottery.cpp
+    src/Game.cpp
+    src/Renderer.cpp
 )
 
-add_executable(Angel12.x
+add_executable(Angel12
     ${SOURCES}
 )
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2")
-target_include_directories(Angel12.x PRIVATE ${CMAKE_SOURCE_DIR}/include)
+# This assumes the SDL source is available in vendored/SDL
+add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
+
+# set the output directory for built objects.
+# This makes sure that the dynamic library goes into the build directory automatically.
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Release)
+endif()
+
+# set PROJECT_ROOT
+target_compile_definitions(Angel12 PRIVATE PROJECT_ROOT="${CMAKE_SOURCE_DIR}")
+
+# Link dependencies
+target_link_libraries(Angel12 PRIVATE SDL3::SDL3)
+target_include_directories(Angel12 PRIVATE ${CMAKE_SOURCE_DIR}/include)

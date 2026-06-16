@@ -27,17 +27,15 @@ vector<Flag> load_flags(const toml::table& tables, string_view key);
 
 class FlagLottery{
 private:
-    const vector<Flag>& roleFlags;
-    const vector<Flag>& bonusFlags;
+    vector<Flag> roleFlags;
+    vector<Flag> bonusFlags;
     mt19937 rng{random_device{}()};
     uniform_int_distribution<uint16_t> dist{0, 65535};
+    optional<Flag> bonusFlag=nullopt;
 
-    optional<Flag> bonusFlag;
+    vector<Flag> load_flags(const toml::table& tables, string_view key);
 
 public:
-    FlagLottery(vector<Flag>& roleFlags, vector<Flag>& bonusFlags):
-        roleFlags(roleFlags),
-        bonusFlags(bonusFlags)
-        {}
+    void init();
     optional<Flag> draw();
 };
