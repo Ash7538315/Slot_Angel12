@@ -1,5 +1,5 @@
 #include "Game.hpp"
-#include "FlagLottery.hpp"
+#include "FlagManager.hpp"
 #include "ReelCtrl.hpp"
 #include <string_view>
 

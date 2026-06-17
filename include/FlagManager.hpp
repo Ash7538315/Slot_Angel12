@@ -10,7 +10,7 @@
 using namespace std;
 
 struct Flag{
-    string_view name;
+    string name;
     int allocateNum;
     int payout;
     ReelCtrl ctrl;

@@ -5,4 +5,5 @@ int main(){
 
     game.init();
     game.run();
+    game.exit();
 }

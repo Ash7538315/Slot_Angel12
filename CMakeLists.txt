@@ -2,13 +2,14 @@ cmake_minimum_required(VERSION 3.16)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 # Disable X11
 set(SDL_X11_XTEST OFF CACHE BOOL "" FORCE)
+set(SDL_WAYLAND ON CACHE BOOL "" FORCE)
 
 project(ANGEL12)
 
 set(SOURCES
     src/main.cpp
     src/ReelCtrl.cpp
-    src/FlagLottery.cpp
+    src/FlagManager.cpp
     src/Game.cpp
     src/Renderer.cpp
 )
