@@ -3,6 +3,7 @@
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_stdinc.h"
 #include "SDL3/SDL_timer.h"
+#include "InputManager.hpp"
 #include "Game.hpp"
 
 using namespace std;
@@ -30,32 +31,43 @@ void Game::run(){
         prev = now;
 
         // Detect Event
-        SDL_Event event;
-        while (SDL_PollEvent(&event)) {
-            update(event);
-        }
+        inputManager.check();
 
         // Update;
         while (accum >= GameConst::timestep){
             accum -= GameConst::timestep;
+            update();
+            inputManager.clear();
         }
-
-
+        renderer.update();
     }
 };
-
 
 void Game::exit(){
     renderer.exit();
-}
+};
 
-void Game::update(const SDL_Event& event){
-    switch (event.type) {
-        case SDL_EVENT_QUIT:
-            running = false;
-            break;
-        case SDL_EVENT_KEY_DOWN:
-            cout << flagDrawer.draw()->name << "\n";
-            break;
+void Game::update(){
+    if(inputManager.state().quit == true){
+        running = false;
     }
 };
+
+void Game::runTest(){
+        if (!SDL_Init(SDL_INIT_VIDEO)) {
+        SDL_Log("SDL_Init failed: %s", SDL_GetError());
+    }
+
+    SDL_Window* window = SDL_CreateWindow(
+        "Angel12",
+        1280,
+        720,
+        0
+    );
+
+    if (!window) {
+        SDL_Log("SDL_CreateWindow failed: %s", SDL_GetError());
+    }
+
+    SDL_Delay(5000);
+}

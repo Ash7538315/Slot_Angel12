@@ -1,5 +1,7 @@
 #pragma once
 #include <filesystem>
+#include <type_traits>
+#include "InputManager.hpp"
 #include "Renderer.hpp"
 #include "FlagManager.hpp"
 #include "SDL3/SDL_events.h"
@@ -17,11 +19,14 @@ class Game{
 private:
     FlagLottery flagDrawer;
     Renderer renderer;
+    InputManager inputManager;
 
-    void update(const SDL_Event& event);
     bool running;
+    void update();
 public:
     void init();
     void run();
     void exit();
+
+    void runTest();
 };
