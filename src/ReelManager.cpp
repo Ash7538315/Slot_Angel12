@@ -32,14 +32,14 @@ ReelCtrlFlag to_ReelCtrlFlag(string_view str){
 
 float Reel::stopScrollY(const int& symbolIndex){
     float scrollY = (symbolIndex + 2) * GameConst::symbollHeight - GameConst::symbollHeight / 12.0;
-    if (scrollY > GameConst::symbollHeight * GameConst::nsymbol){
+    if (scrollY > GameConst::symbollHeight * GameConst::nsymbol - GameConst::symbollHeight / 12.0){
         scrollY -= GameConst::symbollHeight * GameConst::nsymbol;
     }; 
     return scrollY;
 };
 
 int Reel::symbolIndex(){
-    int symbolIndex = floor((reelScrollY + GameConst::symbollHeight / 12.0) / GameConst::symbollHeight - 2);
+    int symbolIndex = floor((reelScrollY + GameConst::symbollHeight / 12.0) / GameConst::symbollHeight) - 2;
     if (symbolIndex <= 0) {
         symbolIndex += GameConst::nsymbol;
     }
@@ -58,8 +58,8 @@ void Reel::updateScrollY(){
             break;
         case ReelState::Wait:
             float dscrollY = reelScrollY - stopScrollY(stopSymbolIndex);
-            if (dscrollY >= GameConst::symbollHeight * GameConst::nsymbol){
-                dscrollY -= GameConst::symbollHeight * GameConst::nsymbol;
+            if (dscrollY < 0){
+                dscrollY += GameConst::symbollHeight * GameConst::nsymbol;
             }
 
             if (dscrollY <= GameConst::scrollSpeed) {
@@ -77,14 +77,21 @@ void Reel::updateScrollY(){
 
 void ReelCtrl::init(){};
 
-int ReelCtrl::calcStopSymbolIndex(int symbolindex, ReelCtrlFlag reelCtrlFlag){
+int ReelCtrl::calcStopSymbolIndex(int symbolIndex, ReelCtrlFlag reelCtrlFlag){
+    int stopSymbolIndex;
     switch (reelCtrlFlag) {
         case ReelCtrlFlag::Unctrl:
-            return symbolindex;
+            stopSymbolIndex = symbolIndex -4 ;
+            break;
         default:
-            return symbolindex;
+            stopSymbolIndex = symbolIndex;
+            break;
     } 
 
+    if (stopSymbolIndex <= 0) {
+        stopSymbolIndex += GameConst::nsymbol;
+    }
+    return stopSymbolIndex;
 };
 
 void ReelManager::init(){
