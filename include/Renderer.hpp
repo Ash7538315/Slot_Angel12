@@ -1,20 +1,24 @@
 #pragma once
-#include "SDL3/SDL.h"
-#include "SDL3/SDL_events.h"
-#include "SDL3/SDL_main.h"
+#include "GameConst.hpp"
 #include "SDL3/SDL_render.h"
-#include "SDL3/SDL_surface.h"
 
 class Renderer{
 private:
     SDL_Window* window;
     SDL_Renderer* renderer; 
+    
+    SDL_FRect src;
+    SDL_FRect dst;
 
     SDL_Texture* leftReel;
 
+    void reelDraw(SDL_Texture* reelImg, const float reelScrollY, const SDL_FRect dst);
+
 public:
     void init();
-    void update();
+
+    void setScrollY();
+    void update(const float leftReelScrollY);
     void exit();
 
     void initTest();

@@ -14,7 +14,7 @@ vector<Flag> FlagLottery::load_flags(const toml::table& tables, string_view key)
         flag.name = table->at("name").value<string_view>().value();
         flag.payout = table->at("payout").value<int>().value();
         flag.allocateNum = table->at("allocateNum").value<int>().value();
-        flag.ctrl = to_ReelCtrl(table->at("ctrl").value<string_view>().value());
+        flag.ctrl = to_ReelCtrlFlag(table->at("ctrl").value<string_view>().value());
 
         flags.push_back(std::move(flag));
     }

@@ -12,14 +12,16 @@ set(SOURCES
     src/FlagManager.cpp
     src/Game.cpp
     src/Renderer.cpp
+    src/InputManager.cpp
 )
 
 add_executable(Angel12
     ${SOURCES}
 )
 
-# This assumes the SDL source is available in vendored/SDL
+# This assumes the SDL and SDL_image source is available in vendored/
 add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
+add_subdirectory(vendored/SDL_image EXCLUDE_FROM_ALL)
 
 # set the output directory for built objects.
 # This makes sure that the dynamic library goes into the build directory automatically.
@@ -34,5 +36,5 @@ endif()
 target_compile_definitions(Angel12 PRIVATE PROJECT_ROOT="${CMAKE_SOURCE_DIR}")
 
 # Link dependencies
-target_link_libraries(Angel12 PRIVATE SDL3::SDL3)
+target_link_libraries(Angel12 PRIVATE SDL3::SDL3 SDL3_image::SDL3_image)
 target_include_directories(Angel12 PRIVATE ${CMAKE_SOURCE_DIR}/include)

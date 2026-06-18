@@ -13,14 +13,14 @@ struct Flag{
     string name;
     int allocateNum;
     int payout;
-    ReelCtrl ctrl;
+    ReelCtrlFlag ctrl;
 };
 
 inline const Flag miss{
     .name = "miss",
     .allocateNum = 65536,
     .payout = 0,
-    .ctrl = ReelCtrl::Miss
+    .ctrl = ReelCtrlFlag::Miss
 };
 
 vector<Flag> load_flags(const toml::table& tables, string_view key);

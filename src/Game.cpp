@@ -39,7 +39,7 @@ void Game::run(){
             update();
             inputManager.clear();
         }
-        renderer.update();
+        renderer.update(reelCtrl.leftReel.ReelScrollY);
     }
 };
 
@@ -51,23 +51,7 @@ void Game::update(){
     if(inputManager.state().quit == true){
         running = false;
     }
+
+    reelCtrl.leftCtrl();
 };
 
-void Game::runTest(){
-        if (!SDL_Init(SDL_INIT_VIDEO)) {
-        SDL_Log("SDL_Init failed: %s", SDL_GetError());
-    }
-
-    SDL_Window* window = SDL_CreateWindow(
-        "Angel12",
-        1280,
-        720,
-        0
-    );
-
-    if (!window) {
-        SDL_Log("SDL_CreateWindow failed: %s", SDL_GetError());
-    }
-
-    SDL_Delay(5000);
-}
