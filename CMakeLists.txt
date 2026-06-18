@@ -8,7 +8,7 @@ project(ANGEL12)
 
 set(SOURCES
     src/main.cpp
-    src/ReelCtrl.cpp
+    src/ReelManager.cpp
     src/FlagManager.cpp
     src/Game.cpp
     src/Renderer.cpp

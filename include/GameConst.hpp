@@ -12,7 +12,7 @@ namespace GameConst{
     inline constexpr int symbolWidth = 300;
     inline constexpr int symbollHeight = 132;
 
-    inline constexpr double timestep = 1.00 / 119.60;
+    inline constexpr double timestep = 1.00 / 60.01;
     inline constexpr int nsymbol = 21;
     inline constexpr float scrollSpeed = nsymbol * symbollHeight / 0.85 * timestep;
 

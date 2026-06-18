@@ -5,7 +5,7 @@
 #include <string_view>
 #include <vector>
 #include <random>
-#include "ReelCtrl.hpp"
+#include "ReelManager.hpp"
 
 using namespace std;
 

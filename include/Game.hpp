@@ -1,6 +1,6 @@
 #pragma once
 #include "InputManager.hpp"
-#include "ReelCtrl.hpp"
+#include "ReelManager.hpp"
 #include "Renderer.hpp"
 #include "FlagManager.hpp"
 
@@ -9,7 +9,7 @@ private:
     FlagLottery flagDrawer;
     Renderer renderer;
     InputManager inputManager;
-    ReelCtrl reelCtrl;
+    ReelManager reelManager;
 
     bool running;
     void update();

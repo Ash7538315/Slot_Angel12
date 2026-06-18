@@ -1,6 +1,6 @@
 #include "Game.hpp"
 #include "FlagManager.hpp"
-#include "ReelCtrl.hpp"
+#include "ReelManager.hpp"
 #include <string_view>
 
 

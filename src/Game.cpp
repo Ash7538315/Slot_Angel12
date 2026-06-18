@@ -11,6 +11,7 @@ using namespace std;
 void Game::init(){
     flagDrawer.init();
     renderer.init();
+    reelManager.init();
 
 };
 
@@ -38,8 +39,9 @@ void Game::run(){
             accum -= GameConst::timestep;
             update();
             inputManager.clear();
+            cout << reelManager.leftReel.symbolIndex() << " "<< reelManager.leftReel.stopSymbolIndex << endl;
         }
-        renderer.update(reelCtrl.leftReel.ReelScrollY);
+        renderer.update(reelManager.leftReel.reelScrollY, reelManager.centerReel.reelScrollY, reelManager.rightReel.reelScrollY);
     }
 };
 
@@ -52,6 +54,6 @@ void Game::update(){
         running = false;
     }
 
-    reelCtrl.leftCtrl();
+    reelManager.ctrl(inputManager.state());
 };
 

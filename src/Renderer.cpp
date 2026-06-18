@@ -1,6 +1,7 @@
 #include "GameConst.hpp"
 #include "Renderer.hpp" 
 #include "SDL3_image/SDL_image.h"
+#include <iostream>
 
 void Renderer::init(){
     window = SDL_CreateWindow(
@@ -24,7 +25,7 @@ void Renderer::reelDraw(SDL_Texture* reelImg, const float reelScrollY, const SDL
     SDL_RenderTexture(renderer, reelImg, &src, &dst);
 };
 
-void Renderer::update(const float leftReelScrollY){
+void Renderer::update(const float& leftReelScrollY, const float& centerReelScrollY, const float& rightReelScrollY){
     SDL_RenderClear(renderer);
 
     // Render Left reel

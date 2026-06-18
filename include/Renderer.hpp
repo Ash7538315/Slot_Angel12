@@ -18,7 +18,7 @@ public:
     void init();
 
     void setScrollY();
-    void update(const float leftReelScrollY);
+    void update(const float& leftReelScrollY, const float& centerReelScrollY, const float& rightReelScrollY);
     void exit();
 
     void initTest();
