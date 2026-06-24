@@ -38,4 +38,5 @@ void AudioManager::playSE(const SESound& sound){
     }
 };
 
-void AudioManager::exit(){}
+void AudioManager::exit(){
+}

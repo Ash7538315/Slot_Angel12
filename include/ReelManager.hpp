@@ -40,12 +40,13 @@ protected:
     const array<Symbol, 21>* reelStrips;
     const map<CtrlFlag, vector<Symbol>>* targetSymbolTable;
     vector<int> calcCanStopIndex();
+    int currentStopSymbolIndex;
 public: 
     void init(const array<Symbol, 21>& ReelStrips, const map<CtrlFlag, SlipTable>& SlipTable, const map<CtrlFlag, vector<Symbol>>& TargetSymbolTable);
     int firstStopSymbolIndex(const int& symbolIndex, const CtrlFlag& ctrlFlag);
-    ReelRow targetSymbolRow(const int& stopSymbolIndex, const CtrlFlag& ctrlFlag);
+    ReelRow targetSymbolRow(const CtrlFlag& ctrlFlag);
     virtual int secondStopSymbolIndex(const int& symbolIndex, const CtrlFlag& ctrlFlag, const ReelRow& firstTargetSymbolRow){return 0;};
-    ReelResult reelResult(const int& stopSymbolIndex);
+    ReelResult reelResult();
     virtual int thirdStopSymbolIndex(const int& symbolIndex, const CtrlFlag& ctrlFlag, const ReelResult& firstReelResult, const ReelResult& secondReelResult){return 0;};
 
     static ResultFlag checkResultFlag(const ReelResult& leftReelResult, const ReelResult& centerReelResult, const ReelResult& rightReelResult);

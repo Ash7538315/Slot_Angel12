@@ -31,6 +31,18 @@ enum class ResultFlag{
     RB
 };
 
+inline const map<CtrlFlag, vector<ResultFlag>> ctrlFlag2ResultFlagTable{
+    {CtrlFlag::Miss, {ResultFlag::Miss}},
+    {CtrlFlag::Bell, {ResultFlag::Bell}},
+    {CtrlFlag::Replay, {ResultFlag::Replay}},
+    {CtrlFlag::Cherry, {ResultFlag::Cherry, ResultFlag::Miss}},
+    {CtrlFlag::SuikaA, {ResultFlag::Suika, ResultFlag::BonusReachPattern, ResultFlag::Miss}},
+    {CtrlFlag::SuikaB, {ResultFlag::Suika, ResultFlag::BonusReachPattern, ResultFlag::Miss}},
+    {CtrlFlag::RedBB, {ResultFlag::RedBB, ResultFlag::BonusReachPattern, ResultFlag::Miss}},
+    {CtrlFlag::BlueBB, {ResultFlag::BlueBB, ResultFlag::BonusReachPattern, ResultFlag::Miss}},
+    {CtrlFlag::RB, {ResultFlag::RB, ResultFlag::BonusReachPattern, ResultFlag::Miss}}
+};
+
 enum class Symbol{
     None,
     Bell,
@@ -176,7 +188,7 @@ inline const map<CtrlFlag, SlipTable> leftSlipTables {
     {CtrlFlag::SuikaA, {3,4,0,0,1,2,3,0,1,2,3,0,1,2,3,4,0,0,0,1,2}},
     {CtrlFlag::SuikaB, {3,4,0,0,1,2,3,0,1,0,0,0,1,2,3,4,0,0,0,1,2}},
     {CtrlFlag::RedBB, {0,0,1,1,2,3,4,4,1,2,3,0,1,2,3,4,0,0,0,1,2}},
-    {CtrlFlag::BlueBB, {3,40,0,1,2,3,0,0,3,4,3,2,3,4,0,1,2,3,4,1}},
+    {CtrlFlag::BlueBB, {3,4,0,0,1,2,3,0,0,3,4,3,2,3,4,0,1,2,3,4,1}},
     {CtrlFlag::RB, {3,4,0,0,1,2,3,0,1,1,2,3,4,2,3,4,1,2,0,1,2}}
 };
 
@@ -213,7 +225,7 @@ inline const map<CtrlFlag, vector<Symbol>> rightTargetSymbolTable{
     {CtrlFlag::Cherry, {Symbol::Cherry, Symbol::BlueSeven, Symbol::Blank}},
     {CtrlFlag::SuikaA, {Symbol::Suika, Symbol::Bar}},
     {CtrlFlag::SuikaB, {Symbol::Suika, Symbol::Bar}},
-    {CtrlFlag::RedBB, {Symbol::RedSeven}},
+    {CtrlFlag::RedBB, {Symbol::RedSeven, Symbol::Suika, Symbol::Cherry}},
     {CtrlFlag::BlueBB, {Symbol::BlueSeven, Symbol::Cherry, Symbol::Blank, Symbol::Bell}},
-    {CtrlFlag::RB, {Symbol::Bar}}
+    {CtrlFlag::RB, {Symbol::Bar, Symbol::Suika, Symbol::Cherry}}
 };
