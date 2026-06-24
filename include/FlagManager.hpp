@@ -1,41 +1,24 @@
 #pragma once
-#include "toml.hpp"
-#include <cstddef>
-#include <optional>
-#include <string_view>
-#include <vector>
 #include <random>
-#include "ReelManager.hpp"
+#include "FlagData.hpp"
 
 using namespace std;
 
-struct Flag{
-    string name;
-    int allocateNum;
-    int payout;
-    ReelCtrlFlag ctrl;
+enum class BonusStates{
+    NotBonus,
+    HasBonus,
+    InBonus,
 };
 
-inline const Flag miss{
-    .name = "miss",
-    .allocateNum = 65536,
-    .payout = 0,
-    .ctrl = ReelCtrlFlag::Miss
-};
-
-vector<Flag> load_flags(const toml::table& tables, string_view key);
-
-class FlagLottery{
+class FlagManager{
 private:
-    vector<Flag> roleFlags;
-    vector<Flag> bonusFlags;
     mt19937 rng{random_device{}()};
     uniform_int_distribution<uint16_t> dist{0, 65535};
-    optional<Flag> bonusFlag=nullopt;
-
-    vector<Flag> load_flags(const toml::table& tables, string_view key);
 
 public:
+    Flag currentFlag;
+    BonusStates bonusState;
+    Flag hasBonusFlag;
     void init();
-    optional<Flag> draw();
+    void draw();
 };

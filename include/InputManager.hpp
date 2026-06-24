@@ -1,9 +1,6 @@
 #pragma once
-
-#include "toml.hpp"
 struct InputStates{
     bool quit = false;
-    
     bool lever = false;
     bool left = false;
     bool center = false;

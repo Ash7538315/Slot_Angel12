@@ -1,55 +1,38 @@
-#include "Game.hpp"
+#include "FlagData.hpp"
 #include "FlagManager.hpp"
-#include "ReelManager.hpp"
-#include <string_view>
 
-
-vector<Flag> FlagLottery::load_flags(const toml::table& tables, string_view key){
-    vector<Flag> flags;
-    auto arr = tables[key].as_array();
-    for (const auto& node : *arr){
-        auto table = node.as_table();
-
-        Flag flag;
-        flag.name = table->at("name").value<string_view>().value();
-        flag.payout = table->at("payout").value<int>().value();
-        flag.allocateNum = table->at("allocateNum").value<int>().value();
-        flag.ctrl = to_ReelCtrlFlag(table->at("ctrl").value<string_view>().value());
-
-        flags.push_back(std::move(flag));
-    }
-    return flags;
-}
-
-void FlagLottery::init(){
-    ifstream flag_tables(GameConst::rootPath / "asset/config/flag_table.toml");
-    auto tomlTable = toml::parse(flag_tables);
-    roleFlags = load_flags(tomlTable, "role_flag");
-    bonusFlags = load_flags(tomlTable, "bonus_flag");
+void FlagManager::init(){
+    hasBonusFlag = miss;
+    bonusState = BonusStates::NotBonus;
 };
 
-optional<Flag> FlagLottery::draw(){
+void FlagManager::draw(){
     int num = dist(rng);
-    for (const auto& flag : roleFlags){
+    for (const Flag& flag : roleFlags){
         num -= flag.allocateNum;
         if (num < 0){
-            return flag;
+            currentFlag = flag;
+            return;
         }
     }
 
-    if (!bonusFlag){
-    for (const auto& flag : bonusFlags){
-        num -= flag.allocateNum;
-        if (num < 0){
-            bonusFlag = flag;
-            return flag;
+    if (bonusState == BonusStates::NotBonus){
+        for (const Flag& flag : bonusFlags){
+            num -= flag.allocateNum;
+            if (num < 0){
+                currentFlag = flag;
+                hasBonusFlag = flag;
+                bonusState = BonusStates::HasBonus;
+                return;
+            }
         }
-    }
     }
     
-    if (bonusFlag) {
-        return bonusFlag;
+    if (bonusState == BonusStates::HasBonus) {
+        currentFlag = hasBonusFlag;
+        return;
     }
 
-    return miss;
+    currentFlag = miss;
+    return;
 }

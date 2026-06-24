@@ -30,6 +30,18 @@ void InputManager::check(){
                     case SDLK_LEFT:
                         inputStates.left = true;
                         break;
+                    case SDLK_S:
+                        inputStates.center = true;
+                        break;
+                    case SDLK_DOWN:
+                        inputStates.center = true;
+                        break;
+                    case SDLK_D:
+                        inputStates.right = true;
+                        break;
+                    case SDLK_RIGHT:
+                        inputStates.right = true;
+                        break;
                 };
                 
         }

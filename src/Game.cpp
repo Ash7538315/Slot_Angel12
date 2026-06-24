@@ -1,5 +1,7 @@
 #include <iostream>
+#include "AudioManager.hpp"
 #include "FlagManager.hpp"
+#include "ReelManager.hpp"
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_stdinc.h"
 #include "SDL3/SDL_timer.h"
@@ -9,10 +11,10 @@
 using namespace std;
 
 void Game::init(){
-    flagDrawer.init();
+    flagManager.init();
     renderer.init();
     reelManager.init();
-
+    audioManager.init();
 };
 
 void Game::run(){
@@ -31,15 +33,14 @@ void Game::run(){
         accum += dt;
         prev = now;
 
-        // Detect Event
+        // Detect inputs
         inputManager.check();
 
-        // Update;
+        // Update game;
         while (accum >= GameConst::timestep){
             accum -= GameConst::timestep;
             update();
             inputManager.clear();
-            cout << reelManager.leftReel.symbolIndex() << " "<< reelManager.leftReel.stopSymbolIndex << endl;
         }
         renderer.update(reelManager.leftReel.reelScrollY, reelManager.centerReel.reelScrollY, reelManager.rightReel.reelScrollY);
     }
@@ -47,13 +48,32 @@ void Game::run(){
 
 void Game::exit(){
     renderer.exit();
+    audioManager.exit();
 };
 
 void Game::update(){
+    // Exit game
     if(inputManager.state().quit == true){
         running = false;
     }
 
-    reelManager.ctrl(inputManager.state());
+    // lever on 
+    if (inputManager.state().lever == true && reelManager.reelsState == ReelState::Stop ){
+        flagManager.draw();
+        cout << flagManager.currentFlag.name << endl; // debug
+    }
+
+    // reel ctrl
+    reelManager.ctrl(inputManager.state(), flagManager.currentFlag.ctrl);
+
+    // Play SE
+    if (reelManager.event.startReel == true) {
+        audioManager.playSE(SESound::StartReel);
+    }
+
+    if (reelManager.event.stopLeftReel == true || reelManager.event.stopCenterReel == true || reelManager.event.stopRightReel == true ) {
+        audioManager.playSE(SESound::StopReel);
+    }
+
 };
 
