@@ -132,26 +132,26 @@ constexpr array<Symbol, 21> leftReelStrips{
 };
 
 constexpr array<Symbol, 21> centerReelStrips{
-    Symbol::Bell,
     Symbol::Replay,
+    Symbol::Bell,
     Symbol::Suika,
     Symbol::RedSeven,
-    Symbol::Cherry,
-    Symbol::Bell,
     Symbol::Replay,
+    Symbol::Bell,
     Symbol::Bar,
+    Symbol::Replay,
     Symbol::Cherry,
     Symbol::Bell,
     Symbol::Replay,
-    Symbol::Suika,
     Symbol::RedSeven,
     Symbol::Replay,
     Symbol::Bell,
+    Symbol::Suika,
     Symbol::BlueSeven,
-    Symbol::Cherry,
     Symbol::Replay,
     Symbol::Bell,
     Symbol::Blank,
+    Symbol::Bell,
     Symbol::Cherry
 };
 
