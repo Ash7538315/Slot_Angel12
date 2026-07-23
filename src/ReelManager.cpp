@@ -4,7 +4,6 @@
 #include "ReelData.hpp"
 #include <array>
 #include <cmath>
-#include <strings.h>
 #include <vector>
 #include <iostream>
 
