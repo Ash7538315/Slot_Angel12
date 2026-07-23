@@ -13,8 +13,12 @@ private:
     MIX_Audio* stopReelSE;
     MIX_Audio* startReelSE;
 
+    MIX_Track* stopReelTrack;
+    MIX_Track* startReelTrack;
+
 public:
     void init();
+    // Sound SE
     void playSE(const SESound& sound);
     void exit();
 };

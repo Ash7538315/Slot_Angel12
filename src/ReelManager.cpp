@@ -181,6 +181,7 @@ int RightReelCtrl::secondStopSymbolIndex(const int& symbolIndex, const CtrlFlag&
         currentStopSymbolIndex = symbolIndex; 
     }
 
+    // Ctrl linetype
     currentStopSymbolIndex = symbolIndex - slipOptions[0].slipNum;
     if (ctrlFlag == CtrlFlag::SuikaB || ctrlFlag == CtrlFlag::RedBB || ctrlFlag == CtrlFlag::RB) {
         for (const SlipOptions& option : slipOptions) {
