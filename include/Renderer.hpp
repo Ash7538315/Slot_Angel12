@@ -1,6 +1,7 @@
 #pragma once
 #include "GameConst.hpp"
 #include "SDL3/SDL_render.h"
+#include "SDL3_ttf/SDL_ttf.h"
 
 class Renderer{
 private:
@@ -14,14 +15,16 @@ private:
     SDL_Texture* centerReel;
     SDL_Texture* rightReel;
 
-    void reelDraw(SDL_Texture* reelImg, const float reelScrollY, const SDL_FRect dst);
+    TTF_Font* font;
+    TTF_TextEngine* engine;
+
+
+    void reelDraw(SDL_Texture* reelImg, const float reelPos, const SDL_FRect dst);
 
 public:
     void init();
-
-    void setScrollY();
-    void update(const float& leftReelScrollY, const float& centerReelScrollY, const float& rightReelScrollY);
+    void title();
+    void reelUpdate(const float& leftReelPos, const float& centerReelPos, const float& rightReelPos);
     void exit();
-
-    void runTest();
+;
 };

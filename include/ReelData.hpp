@@ -16,6 +16,7 @@ enum class CtrlFlag{
     RedBB,
     BlueBB,
     RB,
+    BBell,
 };
 
 enum class ResultFlag{
@@ -28,10 +29,12 @@ enum class ResultFlag{
     Cherry,
     RedBB,
     BlueBB,
-    RB
+    RB,
+    BBell,
+    ABell,
 };
 
-inline const map<CtrlFlag, vector<ResultFlag>> ctrlFlag2ResultFlagTable{
+inline const map<CtrlFlag, vector<ResultFlag>> ctrlFlag2ResultFlag{
     {CtrlFlag::Miss, {ResultFlag::Miss}},
     {CtrlFlag::Bell, {ResultFlag::Bell}},
     {CtrlFlag::Replay, {ResultFlag::Replay}},
@@ -63,7 +66,7 @@ struct LineResult{
     ResultFlag resultFlag;
 };
 
-constexpr array<LineResult, 10> winningCombinationTable{{
+constexpr array<LineResult, 38> combinationTable{{
     {Symbol::Bell, Symbol::Bell, Symbol::Bell, ResultFlag::Bell},
     {Symbol::Replay, Symbol::Replay, Symbol::Replay, ResultFlag::Replay},
     {Symbol::Cherry, Symbol::Bell, Symbol::Cherry, ResultFlag::Cherry},
@@ -74,9 +77,39 @@ constexpr array<LineResult, 10> winningCombinationTable{{
     {Symbol::RedSeven, Symbol::RedSeven, Symbol::RedSeven, ResultFlag::RedBB},
     {Symbol::BlueSeven, Symbol::BlueSeven, Symbol::BlueSeven, ResultFlag::BlueBB},
     {Symbol::Bar, Symbol::Bar, Symbol::Bar, ResultFlag::RB},
+        {Symbol::Bar, Symbol::Replay, Symbol::Replay, ResultFlag::BonusReachPattern},
+    {Symbol::Bar, Symbol::RedSeven, Symbol::RedSeven, ResultFlag::BonusReachPattern},
+    {Symbol::Bar, Symbol::RedSeven, Symbol::BlueSeven, ResultFlag::BonusReachPattern},
+    {Symbol::Bar, Symbol::RedSeven, Symbol::Bar, ResultFlag::BonusReachPattern},
+    {Symbol::Bar, Symbol::BlueSeven, Symbol::BlueSeven, ResultFlag::BonusReachPattern},
+    {Symbol::Bar, Symbol::BlueSeven, Symbol::RedSeven, ResultFlag::BonusReachPattern},
+    {Symbol::Bar, Symbol::BlueSeven, Symbol::Bar, ResultFlag::BonusReachPattern},
+    {Symbol::Bar, Symbol::Bar, Symbol::RedSeven, ResultFlag::BonusReachPattern},
+    {Symbol::Bar, Symbol::Bar, Symbol::BlueSeven, ResultFlag::BonusReachPattern},
+    {Symbol::RedSeven, Symbol::Cherry, Symbol::Cherry, ResultFlag::BonusReachPattern},
+    {Symbol::Suika, Symbol::Suika, Symbol::RedSeven, ResultFlag::BonusReachPattern},
+    {Symbol::RedSeven, Symbol::RedSeven, Symbol::BlueSeven, ResultFlag::BonusReachPattern},
+    {Symbol::RedSeven, Symbol::RedSeven, Symbol::Bar, ResultFlag::BonusReachPattern},
+    {Symbol::RedSeven, Symbol::BlueSeven, Symbol::BlueSeven, ResultFlag::BonusReachPattern},
+    {Symbol::RedSeven, Symbol::BlueSeven, Symbol::Bar, ResultFlag::BonusReachPattern},
+    {Symbol::RedSeven, Symbol::BlueSeven, Symbol::RedSeven, ResultFlag::BonusReachPattern},
+    {Symbol::RedSeven, Symbol::Bar, Symbol::RedSeven, ResultFlag::BonusReachPattern},
+    {Symbol::RedSeven, Symbol::Bar, Symbol::BlueSeven, ResultFlag::BonusReachPattern},
+    {Symbol::RedSeven, Symbol::Bar, Symbol::Bar, ResultFlag::BonusReachPattern},
+    {Symbol::BlueSeven, Symbol::Bar, Symbol::Bar, ResultFlag::BonusReachPattern},
+    {Symbol::BlueSeven, Symbol::Bar, Symbol::BlueSeven, ResultFlag::BonusReachPattern},
+    {Symbol::BlueSeven, Symbol::Bar, Symbol::RedSeven, ResultFlag::BonusReachPattern},
+    {Symbol::BlueSeven, Symbol::RedSeven, Symbol::RedSeven, ResultFlag::BonusReachPattern},
+    {Symbol::BlueSeven, Symbol::RedSeven, Symbol::BlueSeven, ResultFlag::BonusReachPattern},
+    {Symbol::BlueSeven, Symbol::RedSeven, Symbol::Bar, ResultFlag::BonusReachPattern},
+    {Symbol::BlueSeven, Symbol::BlueSeven, Symbol::RedSeven, ResultFlag::BonusReachPattern},
+    {Symbol::BlueSeven, Symbol::BlueSeven, Symbol::Bar, ResultFlag::BonusReachPattern},
+    {Symbol::BlueSeven, Symbol::Bell, Symbol::Bell, ResultFlag::BonusReachPattern},
 }};
 
-constexpr array<LineResult, 28> bonusReachCombinationTable{{
+
+
+constexpr array<LineResult, 28> ReachCombinationTable{{
     {Symbol::Bar, Symbol::Replay, Symbol::Replay, ResultFlag::BonusReachPattern},
     {Symbol::Bar, Symbol::RedSeven, Symbol::RedSeven, ResultFlag::BonusReachPattern},
     {Symbol::Bar, Symbol::RedSeven, Symbol::BlueSeven, ResultFlag::BonusReachPattern},

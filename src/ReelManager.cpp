@@ -9,70 +9,25 @@
 
 using namespace std;
 
-float Reel::stopScrollY(const int& symbolIndex){
-    float scrollY = (symbolIndex + 2) * GameConst::symbollHeight - GameConst::symbollHeight / 12.0;
-    if (scrollY > GameConst::symbollHeight * GameConst::nsymbol - GameConst::symbollHeight / 12.0){
-        scrollY -= GameConst::symbollHeight * GameConst::nsymbol;
-    }; 
-    return scrollY;
-};
-
-int Reel::symbolIndex(){
-    int symbolIndex = floor((reelScrollY + GameConst::symbollHeight / 12.0) / GameConst::symbollHeight) - 2;
-    if (symbolIndex <= 0) {
-        symbolIndex += GameConst::nsymbol;
-    }
-    return symbolIndex;
-};
-
-void Reel::updateScrollY(){
-    switch (state) {
-        case ReelState::Stop:
-            break;
-        case ReelState::Spin:
-            reelScrollY -= GameConst::scrollSpeed;
-            if (reelScrollY <= GameConst::symbollHeight - GameConst::symbollHeight / 12.0) {
-                reelScrollY += GameConst::symbollHeight * GameConst::nsymbol;
-            }
-            break;
-        case ReelState::Wait:
-            float dscrollY = reelScrollY - stopScrollY(stopSymbolIndex);
-            if (dscrollY < 0){
-                dscrollY += GameConst::symbollHeight * GameConst::nsymbol;
-            }
-
-            if (dscrollY <= GameConst::scrollSpeed) {
-                reelScrollY = stopScrollY(stopSymbolIndex);
-                state = ReelState::Stop;
-            } else {
-                reelScrollY -= GameConst::scrollSpeed;
-                if (reelScrollY <= GameConst::symbollHeight - GameConst::symbollHeight / 12.0) {
-                    reelScrollY += GameConst::symbollHeight * GameConst::nsymbol;
-                }
-            }
-            break;
-    }
-}
-
-void ReelCtrl::init(const array<Symbol, 21>& ReelStrips, const map<CtrlFlag, SlipTable>& SlipTable, const map<CtrlFlag, vector<Symbol>>& TargetSymbolTable){
+void Reel::init(const array<Symbol, 21>& ReelStrips, const map<CtrlFlag, SlipTable>& SlipTable, const map<CtrlFlag, vector<Symbol>>& TargetSymbolTable){
     reelStrips = &ReelStrips;
     slipTable = &SlipTable;
     targetSymbolTable = &TargetSymbolTable;
 };
 
-int ReelCtrl::firstStopSymbolIndex(const int& symbolIndex, const CtrlFlag& ctrlFlag){
-    currentStopSymbolIndex = symbolIndex - slipTable->at(ctrlFlag)[symbolIndex-1];
+void Reel::firstStop(const CtrlFlag& ctrlFlag){
+    stopPosIndex = posIndex() - slipTable->at(ctrlFlag)[posIndex() - 1];
 
-    if (currentStopSymbolIndex <= 0) {
-        currentStopSymbolIndex += GameConst::nsymbol;
-}
-    return currentStopSymbolIndex;
+    if (stopPosIndex <= 0) {
+        stopPosIndex += GameConst::nsymbol;
+    }
+    stopSymbols = colSymbols(stopPosIndex);
 };
 
-ReelRow ReelCtrl::targetSymbolRow(const CtrlFlag& ctrlFlag){
+ReelRow Reel::targetRow(const CtrlFlag& ctrlFlag){
     for (const ReelRow& row : reelRows) {
         for (const Symbol& targetSymbol : targetSymbolTable->at(ctrlFlag)) {
-            if((*reelStrips)[currentStopSymbolIndex+static_cast<int>(row)-1] == targetSymbol){
+            if((*reelStrips)[stopPosIndex+static_cast<int>(row)-1] == targetSymbol){
                 return row;
             };
         }
@@ -85,10 +40,10 @@ ReelRow ReelCtrl::targetSymbolRow(const CtrlFlag& ctrlFlag){
     return ReelRow::None;;
 };
 
-ReelResult ReelCtrl::reelResult(){
-    int i = currentStopSymbolIndex;
-    int j= currentStopSymbolIndex + 1;
-    int k= currentStopSymbolIndex + 2;
+ColSymbols Reel::colSymbols(const int& posIndex){
+    int i = posIndex;
+    int j= posIndex + 1;
+    int k= posIndex + 2;
 
     if (j > GameConst::nsymbol){
         j -= GameConst::nsymbol;
@@ -98,26 +53,70 @@ ReelResult ReelCtrl::reelResult(){
         k -= GameConst::nsymbol;
     };
 
-    ReelResult result = {
+    ColSymbols colSymbols = {
         .top = (*reelStrips)[i-1],
         .middle = (*reelStrips)[j-1],
         .bottom = (*reelStrips)[k-1],
     };
-    return result;
+    return colSymbols;
 };
 
-int CenterReelCtrl::thirdStopSymbolIndex(const int& symbolIndex, const CtrlFlag& ctrlFlag, const ReelResult& leftReelResult, const ReelResult& rightReelResult){
+float Reel::stopReelPos(const int& symbolIndex){
+    float reelPos = (symbolIndex + 2) * GameConst::symbollHeight - GameConst::symbollHeight / 12.0;
+    if (reelPos > GameConst::symbollHeight * GameConst::nsymbol - GameConst::symbollHeight / 12.0){
+        reelPos -= GameConst::symbollHeight * GameConst::nsymbol;
+    }; 
+    return reelPos;
+};
+
+int Reel::posIndex(){
+    int symbolIndex = floor((reelPos + GameConst::symbollHeight / 12.0) / GameConst::symbollHeight) - 2;
+    if (symbolIndex <= 0) {
+        symbolIndex += GameConst::nsymbol;
+    }
+    return symbolIndex;
+};
+
+void Reel::updateReelPos(){
+    switch (state) {
+        case ReelState::Stop:
+            break;
+        case ReelState::Spin:
+            reelPos -= GameConst::scrollSpeed;
+            if (reelPos <= GameConst::symbollHeight - GameConst::symbollHeight / 12.0) {
+                reelPos += GameConst::symbollHeight * GameConst::nsymbol;
+            }
+            break;
+        case ReelState::Wait:
+            float d = reelPos - stopReelPos(stopPosIndex);
+            if (d < 0){
+                d += GameConst::symbollHeight * GameConst::nsymbol;
+            }
+
+            if (d <= GameConst::scrollSpeed) {
+                reelPos = stopReelPos(stopPosIndex);
+                state = ReelState::Stop;
+            } else {
+                reelPos -= GameConst::scrollSpeed;
+                if (reelPos <= GameConst::symbollHeight - GameConst::symbollHeight / 12.0) {
+                    reelPos += GameConst::symbollHeight * GameConst::nsymbol;
+                }
+            }
+            break;
+    }
+}
+
+void CenterReel::thirdStop(const CtrlFlag& ctrlFlag, const ColSymbols& leftStopSymbols, const ColSymbols& rightStopSymbols){
     vector<int> slipOptions;
-    for (const ResultFlag& resultFlag : ctrlFlag2ResultFlagTable.at(ctrlFlag)) {
+    for (const ResultFlag& drawnFlag : ctrlFlag2ResultFlag.at(ctrlFlag)) {
         for (int islip = 0; islip <=4; ++islip){
-            int loc = symbolIndex - islip;
+            int loc = posIndex() - islip;
             if (loc <= 0){
                 loc += GameConst::nsymbol;
             };
-            currentStopSymbolIndex = loc;
-            ReelResult centerReelResult = reelResult();
-            ResultFlag checkResultFlag = ReelCtrl::checkResultFlag(leftReelResult, centerReelResult, rightReelResult);
-            if (checkResultFlag == resultFlag){
+            ColSymbols centerStopSymbols = colSymbols(loc);
+            ResultFlag resultFlags= check5Line(leftStopSymbols, centerStopSymbols, rightStopSymbols, combinationTable);
+            if (resultFlags == drawnFlag){
                 slipOptions.push_back(islip);
             }
         };
@@ -125,18 +124,17 @@ int CenterReelCtrl::thirdStopSymbolIndex(const int& symbolIndex, const CtrlFlag&
 
     if (slipOptions.empty()) {
         cerr << "Not Found second Stop Pattern" << endl;
-        currentStopSymbolIndex = symbolIndex;
-        return currentStopSymbolIndex;
+        stopPosIndex = posIndex();
     }
-
-    currentStopSymbolIndex = symbolIndex - slipOptions[0];
-    if (currentStopSymbolIndex <= 0){
-        currentStopSymbolIndex += GameConst::nsymbol;
+ 
+    stopPosIndex = posIndex() - slipOptions[0];
+    if (stopPosIndex <= 0){
+        stopPosIndex += GameConst::nsymbol;
     };
-    return currentStopSymbolIndex;
+    stopSymbols = colSymbols(stopPosIndex);
 };
 
-int RightReelCtrl::secondStopSymbolIndex(const int& symbolIndex, const CtrlFlag& ctrlFlag, const ReelRow& leftTargetSymbolRow){
+void RightReel::secondStop(const CtrlFlag& ctrlFlag, const ReelRow& leftTargetSymbolRow){
     vector<ReelRow> stopRowOptions;
     switch (leftTargetSymbolRow) {
         case ReelRow::Top:
@@ -157,7 +155,7 @@ int RightReelCtrl::secondStopSymbolIndex(const int& symbolIndex, const CtrlFlag&
     for (const Symbol& symbol : targetSymbolTable->at(ctrlFlag)){
         for (int islip = 0; islip <=4; ++islip){
             for (const ReelRow& row : stopRowOptions){
-                int loc = symbolIndex - islip + static_cast<int>(row);
+                int loc = posIndex() - islip + static_cast<int>(row);
                 if (loc<= 0){
                     loc += GameConst::nsymbol;
                 } else if (loc > GameConst::nsymbol) {
@@ -177,15 +175,15 @@ int RightReelCtrl::secondStopSymbolIndex(const int& symbolIndex, const CtrlFlag&
 
     if (slipOptions.empty()) {
         cerr << "Not Found second Stop Pattern" << endl;
-        currentStopSymbolIndex = symbolIndex; 
+        stopPosIndex = posIndex(); 
     }
 
     // Ctrl linetype
-    currentStopSymbolIndex = symbolIndex - slipOptions[0].slipNum;
+    stopPosIndex= posIndex() - slipOptions[0].slipNum;
     if (ctrlFlag == CtrlFlag::SuikaB || ctrlFlag == CtrlFlag::RedBB || ctrlFlag == CtrlFlag::RB) {
         for (const SlipOptions& option : slipOptions) {
             if (option.type == LineType::Diagonal) {
-                currentStopSymbolIndex = symbolIndex - option.slipNum;
+                stopPosIndex = posIndex() - option.slipNum;
                 break;
             }
         }
@@ -194,94 +192,40 @@ int RightReelCtrl::secondStopSymbolIndex(const int& symbolIndex, const CtrlFlag&
     if (ctrlFlag == CtrlFlag::SuikaA) {
         for (const SlipOptions& option : slipOptions) {
             if (option.type == LineType::Horizontal) {
-                currentStopSymbolIndex = symbolIndex - option.slipNum;
+                stopPosIndex = posIndex() - option.slipNum;
                 break;
             }
         }
     }
 
-    if (currentStopSymbolIndex <= 0) {
-        currentStopSymbolIndex += GameConst::nsymbol;
-    }
-    return currentStopSymbolIndex;
-};
-
-ResultFlag ReelCtrl::checkResultFlag(const ReelResult& leftReelResult, const ReelResult& centerReelResult, const ReelResult& rightReelResult){
-    vector<ResultFlag> resultFlags;
-    for (const LineResult& combination : winningCombinationTable) {
-        if (leftReelResult.top == combination.left && centerReelResult.top == combination.center && rightReelResult.top == combination.right) {
-            resultFlags.push_back(combination.resultFlag);
-        };
-        if (leftReelResult.middle == combination.left && centerReelResult.middle == combination.center && rightReelResult.middle == combination.right) {
-            resultFlags.push_back(combination.resultFlag);
-        };
-        if (leftReelResult.bottom == combination.left && centerReelResult.bottom == combination.center && rightReelResult.bottom == combination.right) {
-            resultFlags.push_back(combination.resultFlag);
-        };
-        if (leftReelResult.top == combination.left && centerReelResult.middle == combination.center && rightReelResult.bottom == combination.right) {
-            resultFlags.push_back(combination.resultFlag);
-        };
-        if (leftReelResult.bottom == combination.left && centerReelResult.middle == combination.center && rightReelResult.top == combination.right) {
-            resultFlags.push_back(combination.resultFlag);
-        };
+    if (stopPosIndex<= 0) {
+        stopPosIndex += GameConst::nsymbol;
     }
 
-    bool isBonusReachCombination = false;
-    for (const LineResult& combination : bonusReachCombinationTable) {
-        if (leftReelResult.top == combination.left && centerReelResult.top == combination.center && rightReelResult.top == combination.right) {
-            isBonusReachCombination = true;
-        };
-        if (leftReelResult.middle == combination.left && centerReelResult.middle == combination.center && rightReelResult.middle == combination.right) {
-            isBonusReachCombination = true;
-        };
-        if (leftReelResult.bottom == combination.left && centerReelResult.bottom == combination.center && rightReelResult.bottom == combination.right) {
-            isBonusReachCombination = true;
-        };
-        if (leftReelResult.top == combination.left && centerReelResult.middle == combination.center && rightReelResult.bottom == combination.right) {
-            isBonusReachCombination = true;
-        };
-        if (leftReelResult.bottom == combination.left && centerReelResult.middle == combination.center && rightReelResult.top == combination.right) {
-            isBonusReachCombination = true;
-        };
-    };
-
-    switch (resultFlags.size()) {
-        case 0:
-            if (isBonusReachCombination) {
-                return ResultFlag::BonusReachPattern;
-            } else {
-                return ResultFlag::Miss;
-            };
-        case 1:
-            if (resultFlags[0] == ResultFlag::Cherry && isBonusReachCombination) {
-                return ResultFlag::BadPattern;
-            } else {
-                return resultFlags[0];
-            }
-        default:
-            return ResultFlag::BadPattern;
-    }
+    stopSymbols = colSymbols(stopPosIndex);
 };
 
 void ReelManager::init(){
     leftReel.state = ReelState::Stop;
-    leftReel.reelScrollY = GameConst::symbollHeight * 3 - GameConst::symbollHeight / 12.0;
+    leftReel.reelPos = GameConst::symbollHeight * 3 - GameConst::symbollHeight / 12.0;
 
     centerReel.state = ReelState::Stop;
-    centerReel.reelScrollY = GameConst::symbollHeight * 3 - GameConst::symbollHeight / 12.0;
+    centerReel.reelPos = GameConst::symbollHeight * 3 - GameConst::symbollHeight / 12.0;
 
     rightReel.state = ReelState::Stop;
-    rightReel.reelScrollY = GameConst::symbollHeight * 3 - GameConst::symbollHeight / 12.0;
+    rightReel.reelPos = GameConst::symbollHeight * 3 - GameConst::symbollHeight / 12.0;
 
     reelsState = ReelState::Stop;
 
-    leftCtrl.init(leftReelStrips, leftSlipTables, leftTargetSymbolTable);
-    centerCtrl.init(centerReelStrips, centerSlipTables, centerTargetSymbolTable);
-    rightCtrl.init(rightReelStrips, rightSlipTables, rightTargetSymbolTable);
+    leftReel.init(leftReelStrips, leftSlipTables, leftTargetSymbolTable);
+    centerReel.init(centerReelStrips, centerSlipTables, centerTargetSymbolTable);
+    rightReel.init(rightReelStrips, rightSlipTables, rightTargetSymbolTable);
 };
 
-void ReelManager::ctrl(const InputStates& inputStates, const CtrlFlag& ctrlFlag){
+void ReelManager::ctrl(const InputStates& inputStates, const CtrlFlag& ctrlFlag, const BonusStates& bonusState){
     event.clear();
+
+    // for Reel Wait
     now = SDL_GetPerformanceCounter();
     double dt = (now - prevStartSpinTime) / freq;
 
@@ -293,25 +237,26 @@ void ReelManager::ctrl(const InputStates& inputStates, const CtrlFlag& ctrlFlag)
     // left reel
     if ( dt >= GameConst::startWait && inputStates.left == true && leftReel.state == ReelState::Spin ){
         leftReel.state = ReelState::Wait;
-        leftReel.stopSymbolIndex = leftCtrl.firstStopSymbolIndex(leftReel.symbolIndex(), ctrlFlag);
+        leftReel.firstStop(ctrlFlag);
         event.stopLeftReel = true;
     };
 
     // center reel
     if (inputStates.center == true && centerReel.state == ReelState::Spin && leftReel.state != ReelState::Spin && rightReel.state != ReelState::Spin ){
         centerReel.state = ReelState::Wait;
-        centerReel.stopSymbolIndex = centerCtrl.thirdStopSymbolIndex(centerReel.symbolIndex(), ctrlFlag, leftCtrl.reelResult(), rightCtrl.reelResult());
+        centerReel.thirdStop(ctrlFlag, leftReel.stopSymbols, rightReel.stopSymbols);
         event.stopCenterReel = true;
     };
 
     // right reel
     if (inputStates.right == true && rightReel.state == ReelState::Spin && leftReel.state != ReelState::Spin ){
         rightReel.state = ReelState::Wait;
-        rightReel.stopSymbolIndex = rightCtrl.secondStopSymbolIndex(rightReel.symbolIndex(), ctrlFlag, leftCtrl.targetSymbolRow(ctrlFlag));
+        rightReel.secondStop(ctrlFlag, leftReel.targetRow(ctrlFlag));
         event.stopRightReel = true;
     }
 
     // Start spin
+    // Ctrl ReelWait
     if (dt > GameConst::reelWait && reelsState == ReelState::Wait) {
         startSpin();
         reelsState = ReelState::Spin;
@@ -320,13 +265,14 @@ void ReelManager::ctrl(const InputStates& inputStates, const CtrlFlag& ctrlFlag)
     };
 
     // Update reel
-    leftReel.updateScrollY();
-    centerReel.updateScrollY();
-    rightReel.updateScrollY();
+    leftReel.updateReelPos();
+    centerReel.updateReelPos();
+    rightReel.updateReelPos();
 
     // check stop all reel
     if (leftReel.state == ReelState::Stop && centerReel.state == ReelState::Stop && rightReel.state == ReelState::Stop && reelsState == ReelState::Spin) {
         reelsState = ReelState::Stop;
+        reelResult = check5Line(leftReel.stopSymbols, centerReel.stopSymbols, rightReel.stopSymbols, combinationTable);
     };
 }
 
@@ -334,4 +280,59 @@ void ReelManager::startSpin(){
     leftReel.state = ReelState::Spin;
     centerReel.state =  ReelState::Spin;
     rightReel.state = ReelState::Spin;
+};
+
+ResultFlag check5Line(const ColSymbols& leftStopSymbols, const ColSymbols& centerStopSymbols, const ColSymbols& rightStopSymbols, span<const LineResult> table){
+    vector<ResultFlag> resultFlags;
+    for (const LineResult& combination : table) {
+        // top line
+        if (leftStopSymbols.top == combination.left && centerStopSymbols.top == combination.center && rightStopSymbols.top == combination.right) {
+            resultFlags.push_back(combination.resultFlag);
+        };
+        // middle line
+        if (leftStopSymbols.middle == combination.left && centerStopSymbols.middle == combination.center && rightStopSymbols.middle == combination.right) {
+            resultFlags.push_back(combination.resultFlag);
+        };
+        // bottom line
+        if (leftStopSymbols.bottom == combination.left && centerStopSymbols.bottom == combination.center && rightStopSymbols.bottom == combination.right) {
+            resultFlags.push_back(combination.resultFlag);
+        };
+        // top 2 bottom
+        if (leftStopSymbols.top == combination.left && centerStopSymbols.middle == combination.center && rightStopSymbols.bottom == combination.right) {
+            resultFlags.push_back(combination.resultFlag);
+        };
+        // bottom 2 top
+        if (leftStopSymbols.bottom == combination.left && centerStopSymbols.middle == combination.center && rightStopSymbols.top == combination.right) {
+            resultFlags.push_back(combination.resultFlag);
+        };
+    }
+
+    switch (resultFlags.size()) {
+        case 0:
+            return ResultFlag::Miss;
+        case 1:
+            return resultFlags[0];
+        default:
+            return ResultFlag::BadPattern;
+    }
+
+};
+
+ResultFlag check1Line(const ColSymbols& leftStopSymbols, const ColSymbols& centerStopSymbols, const ColSymbols& rightStopSymbols, span<const LineResult> table){
+    vector<ResultFlag> resultFlags;
+    for (const LineResult& combination : table) {
+        // middle line
+        if (leftStopSymbols.middle == combination.left && centerStopSymbols.middle == combination.center && rightStopSymbols.middle == combination.right) {
+            resultFlags.push_back(combination.resultFlag);
+        };
+    }
+
+    switch (resultFlags.size()) {
+        case 0:
+            return ResultFlag::Miss;
+        case 1:
+            return resultFlags[0];
+        default:
+            return ResultFlag::BadPattern;
+    }
 };

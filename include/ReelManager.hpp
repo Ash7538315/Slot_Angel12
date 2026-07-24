@@ -1,7 +1,9 @@
 #pragma once
 #include "SDL3/SDL_timer.h"
 #include "InputManager.hpp"
+#include "FlagManager.hpp"
 #include "ReelData.hpp"
+#include <span>
 #include <vector>
 using namespace std;
 
@@ -28,57 +30,72 @@ constexpr std::array<ReelRow, 3> reelRows{
     ReelRow::Bottom
 };
 
-struct ReelResult{
+struct ColSymbols{
     Symbol top;
     Symbol middle;
     Symbol bottom;
-};
-
-class ReelCtrl{
-protected:
-    const map<CtrlFlag, SlipTable>* slipTable;
-    const array<Symbol, 21>* reelStrips;
-    const map<CtrlFlag, vector<Symbol>>* targetSymbolTable;
-    vector<int> calcCanStopIndex();
-    int currentStopSymbolIndex;
-public: 
-    void init(const array<Symbol, 21>& ReelStrips, const map<CtrlFlag, SlipTable>& SlipTable, const map<CtrlFlag, vector<Symbol>>& TargetSymbolTable);
-    int firstStopSymbolIndex(const int& symbolIndex, const CtrlFlag& ctrlFlag);
-    ReelRow targetSymbolRow(const CtrlFlag& ctrlFlag);
-    virtual int secondStopSymbolIndex(const int& symbolIndex, const CtrlFlag& ctrlFlag, const ReelRow& firstTargetSymbolRow){return 0;};
-    ReelResult reelResult();
-    virtual int thirdStopSymbolIndex(const int& symbolIndex, const CtrlFlag& ctrlFlag, const ReelResult& firstReelResult, const ReelResult& secondReelResult){return 0;};
-
-    static ResultFlag checkResultFlag(const ReelResult& leftReelResult, const ReelResult& centerReelResult, const ReelResult& rightReelResult);
-};
-
-class LeftReelCtrl : public ReelCtrl{};
-
-class CenterReelCtrl : public ReelCtrl{
-public:
-    int thirdStopSymbolIndex(const int& symbolIndex, const CtrlFlag& ctrlFlag, const ReelResult& leftReelResult, const ReelResult& rightReelResult);
-};
-
-class RightReelCtrl : public ReelCtrl{
-public:
-    int secondStopSymbolIndex(const int& symbolIndex, const CtrlFlag& ctrlFlag, const ReelRow& leftTargetSymbolRow);
 };
 
 enum class ReelState{
     Spin,
     Stop,
     Wait,
+    WaitLever,
 };
 
+
 class Reel{
-private:
-    float stopScrollY(const int& symbolIndex);
+protected:
+    const map<CtrlFlag, SlipTable>* slipTable;
+    const array<Symbol, 21>* reelStrips;
+    const map<CtrlFlag, vector<Symbol>>* targetSymbolTable;
+    float stopReelPos(const int& symbolIndex);
+    /* ex.
+    top = Bell,
+    middle = Replay,
+    bottom = RedSeven
+    */
+    ColSymbols colSymbols(const int& posIndex);
 public:
+    void init(const array<Symbol, 21>& ReelStrips, const map<CtrlFlag, SlipTable>& SlipTable, const map<CtrlFlag, vector<Symbol>>& TargetSymbolTable);
     ReelState state;
-    float reelScrollY;
-    int symbolIndex();
-    int stopSymbolIndex;
-    void updateScrollY();
+    // current reel top Position
+    float reelPos;
+    // current reel top Index
+    int posIndex();
+    // stop or going to stop reel top Index
+    int stopPosIndex;
+    // stop col symbols
+    ColSymbols stopSymbols;
+
+    // search target symbol row
+    ReelRow targetRow(const CtrlFlag& ctrlFlag);
+    void firstStop(const CtrlFlag& ctrlFlag);
+    virtual void secondStop(const CtrlFlag& ctrlFlag, const ReelRow& firstTargetSymbolRow){};
+    virtual void thirdStop(const CtrlFlag& ctrlFlag, const ColSymbols& firstStopSymbols, const ColSymbols& secondStopSymbols){};
+
+    // update reel top Position
+    void updateReelPos();
+};
+
+class LeftReel : public Reel{};
+
+
+class CenterReel : public Reel{
+public:
+    // Not yet available
+    // void secondStop(const CtrlFlag& ctrlFlag, const ReelRow& leftTargetSymbolRow);
+
+    void thirdStop(const CtrlFlag& ctrlFlag, const ColSymbols& leftStopSymbols, const ColSymbols& rightStopSymbols);
+};
+
+
+class RightReel : public Reel{
+public:
+    void secondStop(const CtrlFlag& ctrlFlag, const ReelRow& leftTargetSymbolRow);
+    
+    // Not yet available
+    // void thirdStop(const CtrlFlag& ctrlFlag, const ColSymbols& leftStopSymbols, const ColSymbols& centerStopSymbols);
 };
 
 struct ReelEvent{
@@ -97,22 +114,20 @@ private:
     Uint64 prevStartSpinTime = 0;
     Uint64 now;
     double freq = SDL_GetPerformanceFrequency();
-
     void startSpin();
 
 public:
     ReelEvent event;
 
-    Reel leftReel;
-    Reel centerReel;
-    Reel rightReel;
+    LeftReel leftReel;
+    CenterReel centerReel;
+    RightReel rightReel;
     ReelState reelsState;
-
-    LeftReelCtrl leftCtrl;
-    CenterReelCtrl centerCtrl;
-    RightReelCtrl rightCtrl;
-
+    ResultFlag reelResult;
     
     void init();
-    void ctrl(const InputStates& inputStates, const CtrlFlag& ctrlFlag);
+    void ctrl(const InputStates& inputStates, const CtrlFlag& ctrlFlag, const BonusStates& bonusState);
 };
+
+ResultFlag check5Line(const ColSymbols& leftStopSymbols, const ColSymbols& centerStopSymbols, const ColSymbols& rightStopSymbols, span<const LineResult> table);
+ResultFlag check1Line(const ColSymbols& leftStopSymbols, const ColSymbols& centerStopSymbols, const ColSymbols& rightStopSymbols, span<const LineResult> table);

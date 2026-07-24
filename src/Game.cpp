@@ -19,12 +19,23 @@ void Game::init(){
 
 void Game::run(){
     running = true;
-
     Uint64 prev = SDL_GetPerformanceCounter();
     Uint64 now = SDL_GetPerformanceCounter();
     double freq = SDL_GetPerformanceFrequency();
     double accum = 0.00;
     double dt;
+
+    // Title
+    renderer.title();
+    while (true) {
+        // Detect inputs
+        inputManager.clear();
+        inputManager.check();
+        if (inputManager.state().lever == true){break;}
+        else if (inputManager.state().quit == true){
+        running = false;
+        }
+    }
 
     while (running) {
         // Time control
@@ -42,7 +53,7 @@ void Game::run(){
             update();
             inputManager.clear();
         }
-        renderer.update(reelManager.leftReel.reelScrollY, reelManager.centerReel.reelScrollY, reelManager.rightReel.reelScrollY);
+        renderer.reelUpdate(reelManager.leftReel.reelPos, reelManager.centerReel.reelPos, reelManager.rightReel.reelPos);
     }
 };
 
@@ -64,15 +75,17 @@ void Game::update(){
     }
 
     // reel ctrl
-    reelManager.ctrl(inputManager.state(), flagManager.currentFlag.ctrl);
+    reelManager.ctrl(inputManager.state(), flagManager.currentFlag.ctrl, flagManager.bonusState);
 
-    // Play SE
+    // Start Reel
     if (reelManager.event.startReel == true) {
         audioManager.playSE(SESound::StartReel);
     }
 
+    // Stop Reel
     if (reelManager.event.stopLeftReel == true || reelManager.event.stopCenterReel == true || reelManager.event.stopRightReel == true ) {
         audioManager.playSE(SESound::StopReel);
+        
     }
 
 };
