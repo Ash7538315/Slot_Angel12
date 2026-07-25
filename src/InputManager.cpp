@@ -24,6 +24,12 @@ void InputManager::check(){
                     case SDLK_W:
                         inputStates.lever = true;
                         break;
+                    case SDLK_RCTRL:
+                        inputStates.lever = true;
+                        break;
+                    case SDLK_LCTRL:
+                        inputStates.lever = true;
+                        break;
                     case SDLK_A:
                         inputStates.left = true;
                         break;
@@ -42,9 +48,16 @@ void InputManager::check(){
                     case SDLK_RIGHT:
                         inputStates.right = true;
                         break;
-                };
-                
+                    case SDLK_B:
+                        inputStates.bet = true;
+                        break;
+                    case SDLK_LSHIFT:
+                        inputStates.bet = true;
+                        break;
+                    case SDLK_RSHIFT:
+                        inputStates.bet = true;
+                        break;
+                };       
         }
-
     }
 }

@@ -3,18 +3,19 @@
 #include "InputManager.hpp"
 #include "ReelManager.hpp"
 #include "Renderer.hpp"
-#include "FlagManager.hpp"
+#include "StateManager.hpp"
+#include "EffectManager.hpp"
 
 class Game{
 private:
-    FlagManager flagManager;
+    StateManager stateManager;
     Renderer renderer;
     InputManager inputManager;
     ReelManager reelManager;
     AudioManager audioManager;
+    EffectManager effectManager;
 
     bool running;
-    void update();
 public:
     void init();
     void run();

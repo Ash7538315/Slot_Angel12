@@ -6,12 +6,14 @@ project(ANGEL12)
 
 set(SOURCES
     src/main.cpp
+    src/Reel.cpp
     src/ReelManager.cpp
-    src/FlagManager.cpp
+    src/StateManager.cpp
     src/Game.cpp
     src/Renderer.cpp
     src/InputManager.cpp
     src/AudioManager.cpp
+    src/EffectManager.cpp
 )
 
 add_executable(Angel12
@@ -42,5 +44,9 @@ endif()
 target_compile_definitions(Angel12 PRIVATE PROJECT_ROOT="${CMAKE_SOURCE_DIR}")
 
 # Link dependencies
+target_link_options(Angel12 PRIVATE
+    -static-libstdc++
+    -static-libgcc
+)
 target_link_libraries(Angel12 PRIVATE SDL3::SDL3 SDL3_image::SDL3_image SDL3_mixer::SDL3_mixer SDL3_ttf::SDL3_ttf)
 target_include_directories(Angel12 PRIVATE ${CMAKE_SOURCE_DIR}/include)

@@ -6,21 +6,21 @@
 void Renderer::init(){
     window = SDL_CreateWindow(
         GameConst::windowTitle,            // window title
-        GameConst::windowWidth,// width, in pixels
-        GameConst::windowHeight,                              // height, in pixels
-        0                                  // flags - see below  prev: SDL_WINDOW_OPENGL
+        GameConst::windowWidth,                // width, in pixels
+        GameConst::windowHeight,               // height, in pixels
+        0                                  // flags - see below
     );
     renderer = SDL_CreateRenderer(window, nullptr);
 
-    leftReel = IMG_LoadTexture(renderer, (GameConst::rootPath / "asset/img/left_reel.png").string().c_str());
-    centerReel = IMG_LoadTexture(renderer, (GameConst::rootPath / "asset/img/center_reel.png").string().c_str());
-    rightReel = IMG_LoadTexture(renderer, (GameConst::rootPath / "asset/img/right_reel.png").string().c_str());
+    leftReel = IMG_LoadTexture(renderer, "../asset/img/left_reel.png");
+    centerReel = IMG_LoadTexture(renderer, "../asset/img/center_reel.png");
+    rightReel = IMG_LoadTexture(renderer,"../asset/img/right_reel.png");
 
-    font = TTF_OpenFont("../assets/fonts/PlayfairDisplay-VariableFont_wght.ttf", 36);
-    engine = TTF_CreateRendererTextEngine(renderer);
+    // font = TTF_OpenFont("../assets/fonts/PlayfairDisplay-VariableFont_wght.ttf", 36);
+    // engine = TTF_CreateRendererTextEngine(renderer);
 }
 
-void Renderer::reelDraw(SDL_Texture* reelImg, const float ReelPos, const SDL_FRect dst){
+void Renderer::drawReel(SDL_Texture* reelImg, const float ReelPos, const SDL_FRect dst){
     SDL_FRect src{
     0,                                                                  // x
     ReelPos,                                                            // y
@@ -31,29 +31,50 @@ void Renderer::reelDraw(SDL_Texture* reelImg, const float ReelPos, const SDL_FRe
     SDL_RenderTexture(renderer, reelImg, &src, &dst);
 };
 
-void Renderer::title(){
-    // SDL_RenderClear(renderer);
-    // TTF_Text* text = TTF_CreateText(engine, font, "Hello, SDL3!", 0);
-    // if (!text) {
-    // SDL_Log("Text creation failed: %s", SDL_GetError());
-    // }
-    // TTF_SetTextColor(text, 1.0f, 1.0f, 1.0f, 1.0f);
-    // TTF_DrawRendererText(text, 100.0f, 100.0f);
-    // SDL_RenderPresent(renderer);
-}
+void Renderer::drawFlashRect(const float& flashPosx, const float& flashPosy){
+    SDL_FRect flashRect{
+    flashPosx,
+    flashPosy,
+    GameConst::symbolWidth,
+    GameConst::symbollHeight
+    };
 
-void Renderer::reelUpdate(const float& leftReelPos, const float& centerReelPos, const float& rightReelPos){
-    // Clear
+    SDL_RenderFillRect(renderer, &flashRect);
+};
+
+// yet
+void Renderer::title(){}
+
+void Renderer::clear(){
+
     SDL_RenderClear(renderer);
+};
 
-    // Render reel
-    reelDraw(leftReel , leftReelPos, GameConst::leftDst);
-    reelDraw(centerReel , centerReelPos, GameConst::centerDst);
-    reelDraw(rightReel , rightReelPos, GameConst::rightDst);
-
-    // Update
+void Renderer::update(){
     SDL_RenderPresent(renderer);
 }
+
+void Renderer::reels(const float& leftReelPos, const float& centerReelPos, const float& rightReelPos){
+    drawReel(leftReel , leftReelPos, GameConst::leftDst);
+    drawReel(centerReel , centerReelPos, GameConst::centerDst);
+    drawReel(rightReel , rightReelPos, GameConst::rightDst);
+}
+
+void Renderer::reelsFlash(const FlashState& flashState){
+    if (!flashState.isFlash) {
+        return;
+    }
+    
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 128);
+
+    drawFlashRect(GameConst::reelSpace, flashState.leftFlashPos);
+    drawFlashRect(GameConst::reelSpace * 2 + GameConst::symbolWidth, flashState.centerFlashPos);
+    drawFlashRect(GameConst::reelSpace * 3 + GameConst::symbolWidth * 2, flashState.rightFlashPos);
+
+    SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_NONE);
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+};
 
 void Renderer::exit(){
     SDL_DestroyRenderer(renderer);

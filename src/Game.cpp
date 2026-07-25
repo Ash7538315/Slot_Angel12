@@ -1,20 +1,22 @@
 #include <iostream>
 #include "AudioManager.hpp"
-#include "FlagManager.hpp"
+#include "StateManager.hpp"
 #include "ReelManager.hpp"
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_stdinc.h"
 #include "SDL3/SDL_timer.h"
 #include "InputManager.hpp"
 #include "Game.hpp"
+#include "GameConst.hpp"
 
 using namespace std;
 
 void Game::init(){
-    flagManager.init();
+    stateManager.init();
     renderer.init();
     reelManager.init();
     audioManager.init();
+    effectManager.init();
 };
 
 void Game::run(){
@@ -25,20 +27,9 @@ void Game::run(){
     double accum = 0.00;
     double dt;
 
-    // Title
-    renderer.title();
-    while (true) {
-        // Detect inputs
-        inputManager.clear();
-        inputManager.check();
-        if (inputManager.state().lever == true){break;}
-        else if (inputManager.state().quit == true){
-        running = false;
-        }
-    }
-
+    // Main loop
     while (running) {
-        // Time control
+        // dt control
         now = SDL_GetPerformanceCounter();
         dt = (now - prev) / freq;
         accum += dt;
@@ -50,10 +41,56 @@ void Game::run(){
         // Update game;
         while (accum >= GameConst::timestep){
             accum -= GameConst::timestep;
-            update();
+            
+            // Check exit
+            if(inputManager.state().quit){running = false;}
+
+            // Bet
+            if (inputManager.state().bet && !stateManager.isBet) {
+                stateManager.bet();
+            }
+
+            // Lever on 
+            if (inputManager.state().lever && reelManager.reelsState == ReelsState::WaitLever && stateManager.isBet){
+                stateManager.drawFlag();
+                reelManager.reelsState = ReelsState::WaitStart;
+                cout << "Draw: " <<  stateManager.currentFlag.name << endl; // debug
+            }
+
+            // Update Reel
+            reelManager.update(inputManager.state(), stateManager.currentFlag.ctrl, stateManager.bonusState);
+
+            // Evaluate Result
+            if (reelManager.reelsState == ReelsState::Stop){
+                stateManager.evaluateResult(reelManager.reelsResult.flag);
+                effectManager.checkFlash(reelManager.reelsResult);
+                reelManager.reelsState = ReelsState::WaitLever;
+                cout << "Coin: " << stateManager.coin << endl;
+            }
+
+            // Effect
+            effectManager.updateFlash(dt, reelManager.event);
+
+            // Clear input
             inputManager.clear();
         }
-        renderer.reelUpdate(reelManager.leftReel.reelPos, reelManager.centerReel.reelPos, reelManager.rightReel.reelPos);
+
+        // Render
+        renderer.clear();
+        renderer.reels(reelManager.leftReel.reelPos, reelManager.centerReel.reelPos, reelManager.rightReel.reelPos);
+        renderer.reelsFlash(effectManager.event.flash);
+        renderer.update();
+
+        // SE
+        audioManager.SE(reelManager.event, stateManager.event);
+
+        // BGM
+        audioManager.BGM(stateManager.event);
+
+        // Clear event
+        reelManager.event.clear();
+        stateManager.event.clear();
+        // effectManager.event.clear();
     }
 };
 
@@ -62,31 +99,4 @@ void Game::exit(){
     audioManager.exit();
 };
 
-void Game::update(){
-    // Exit game
-    if(inputManager.state().quit == true){
-        running = false;
-    }
-
-    // lever on 
-    if (inputManager.state().lever == true && reelManager.reelsState == ReelState::Stop ){
-        flagManager.draw();
-        cout << flagManager.currentFlag.name << endl; // debug
-    }
-
-    // reel ctrl
-    reelManager.ctrl(inputManager.state(), flagManager.currentFlag.ctrl, flagManager.bonusState);
-
-    // Start Reel
-    if (reelManager.event.startReel == true) {
-        audioManager.playSE(SESound::StartReel);
-    }
-
-    // Stop Reel
-    if (reelManager.event.stopLeftReel == true || reelManager.event.stopCenterReel == true || reelManager.event.stopRightReel == true ) {
-        audioManager.playSE(SESound::StopReel);
-        
-    }
-
-};
 

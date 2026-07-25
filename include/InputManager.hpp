@@ -5,6 +5,7 @@ struct InputStates{
     bool left = false;
     bool center = false;
     bool right = false;
+    bool bet = false;
 };
 
 class InputManager{

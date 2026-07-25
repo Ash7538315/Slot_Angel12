@@ -31,7 +31,7 @@ enum class ResultFlag{
     BlueBB,
     RB,
     BBell,
-    ABell,
+    CBell,
 };
 
 inline const map<CtrlFlag, vector<ResultFlag>> ctrlFlag2ResultFlag{
@@ -43,7 +43,8 @@ inline const map<CtrlFlag, vector<ResultFlag>> ctrlFlag2ResultFlag{
     {CtrlFlag::SuikaB, {ResultFlag::Suika, ResultFlag::BonusReachPattern, ResultFlag::Miss}},
     {CtrlFlag::RedBB, {ResultFlag::RedBB, ResultFlag::BonusReachPattern, ResultFlag::Miss}},
     {CtrlFlag::BlueBB, {ResultFlag::BlueBB, ResultFlag::BonusReachPattern, ResultFlag::Miss}},
-    {CtrlFlag::RB, {ResultFlag::RB, ResultFlag::BonusReachPattern, ResultFlag::Miss}}
+    {CtrlFlag::RB, {ResultFlag::RB, ResultFlag::BonusReachPattern, ResultFlag::Miss}},
+    {CtrlFlag::BBell, {ResultFlag::CBell, ResultFlag::BBell}}
 };
 
 enum class Symbol{
@@ -77,7 +78,7 @@ constexpr array<LineResult, 38> combinationTable{{
     {Symbol::RedSeven, Symbol::RedSeven, Symbol::RedSeven, ResultFlag::RedBB},
     {Symbol::BlueSeven, Symbol::BlueSeven, Symbol::BlueSeven, ResultFlag::BlueBB},
     {Symbol::Bar, Symbol::Bar, Symbol::Bar, ResultFlag::RB},
-        {Symbol::Bar, Symbol::Replay, Symbol::Replay, ResultFlag::BonusReachPattern},
+    {Symbol::Bar, Symbol::Replay, Symbol::Replay, ResultFlag::BonusReachPattern},
     {Symbol::Bar, Symbol::RedSeven, Symbol::RedSeven, ResultFlag::BonusReachPattern},
     {Symbol::Bar, Symbol::RedSeven, Symbol::BlueSeven, ResultFlag::BonusReachPattern},
     {Symbol::Bar, Symbol::RedSeven, Symbol::Bar, ResultFlag::BonusReachPattern},
@@ -107,37 +108,9 @@ constexpr array<LineResult, 38> combinationTable{{
     {Symbol::BlueSeven, Symbol::Bell, Symbol::Bell, ResultFlag::BonusReachPattern},
 }};
 
-
-
-constexpr array<LineResult, 28> ReachCombinationTable{{
-    {Symbol::Bar, Symbol::Replay, Symbol::Replay, ResultFlag::BonusReachPattern},
-    {Symbol::Bar, Symbol::RedSeven, Symbol::RedSeven, ResultFlag::BonusReachPattern},
-    {Symbol::Bar, Symbol::RedSeven, Symbol::BlueSeven, ResultFlag::BonusReachPattern},
-    {Symbol::Bar, Symbol::RedSeven, Symbol::Bar, ResultFlag::BonusReachPattern},
-    {Symbol::Bar, Symbol::BlueSeven, Symbol::BlueSeven, ResultFlag::BonusReachPattern},
-    {Symbol::Bar, Symbol::BlueSeven, Symbol::RedSeven, ResultFlag::BonusReachPattern},
-    {Symbol::Bar, Symbol::BlueSeven, Symbol::Bar, ResultFlag::BonusReachPattern},
-    {Symbol::Bar, Symbol::Bar, Symbol::RedSeven, ResultFlag::BonusReachPattern},
-    {Symbol::Bar, Symbol::Bar, Symbol::BlueSeven, ResultFlag::BonusReachPattern},
-    {Symbol::RedSeven, Symbol::Cherry, Symbol::Cherry, ResultFlag::BonusReachPattern},
-    {Symbol::Suika, Symbol::Suika, Symbol::RedSeven, ResultFlag::BonusReachPattern},
-    {Symbol::RedSeven, Symbol::RedSeven, Symbol::BlueSeven, ResultFlag::BonusReachPattern},
-    {Symbol::RedSeven, Symbol::RedSeven, Symbol::Bar, ResultFlag::BonusReachPattern},
-    {Symbol::RedSeven, Symbol::BlueSeven, Symbol::BlueSeven, ResultFlag::BonusReachPattern},
-    {Symbol::RedSeven, Symbol::BlueSeven, Symbol::Bar, ResultFlag::BonusReachPattern},
-    {Symbol::RedSeven, Symbol::BlueSeven, Symbol::RedSeven, ResultFlag::BonusReachPattern},
-    {Symbol::RedSeven, Symbol::Bar, Symbol::RedSeven, ResultFlag::BonusReachPattern},
-    {Symbol::RedSeven, Symbol::Bar, Symbol::BlueSeven, ResultFlag::BonusReachPattern},
-    {Symbol::RedSeven, Symbol::Bar, Symbol::Bar, ResultFlag::BonusReachPattern},
-    {Symbol::BlueSeven, Symbol::Bar, Symbol::Bar, ResultFlag::BonusReachPattern},
-    {Symbol::BlueSeven, Symbol::Bar, Symbol::BlueSeven, ResultFlag::BonusReachPattern},
-    {Symbol::BlueSeven, Symbol::Bar, Symbol::RedSeven, ResultFlag::BonusReachPattern},
-    {Symbol::BlueSeven, Symbol::RedSeven, Symbol::RedSeven, ResultFlag::BonusReachPattern},
-    {Symbol::BlueSeven, Symbol::RedSeven, Symbol::BlueSeven, ResultFlag::BonusReachPattern},
-    {Symbol::BlueSeven, Symbol::RedSeven, Symbol::Bar, ResultFlag::BonusReachPattern},
-    {Symbol::BlueSeven, Symbol::BlueSeven, Symbol::RedSeven, ResultFlag::BonusReachPattern},
-    {Symbol::BlueSeven, Symbol::BlueSeven, Symbol::Bar, ResultFlag::BonusReachPattern},
-    {Symbol::BlueSeven, Symbol::Bell, Symbol::Bell, ResultFlag::BonusReachPattern},
+constexpr array<LineResult, 2> combinationTableInBonus{{
+    {Symbol::Cherry, Symbol::Bell, Symbol::Bell, ResultFlag::CBell},
+    {Symbol::Bell, Symbol::Bell, Symbol::Bell, ResultFlag::BBell},
 }};
 
 constexpr array<Symbol, 21> leftReelStrips{
@@ -222,7 +195,8 @@ inline const map<CtrlFlag, SlipTable> leftSlipTables {
     {CtrlFlag::SuikaB, {3,4,0,0,1,2,3,0,1,0,0,0,1,2,3,4,0,0,0,1,2}},
     {CtrlFlag::RedBB, {0,0,1,1,2,3,4,4,1,2,3,0,1,2,3,4,0,0,0,1,2}},
     {CtrlFlag::BlueBB, {3,4,0,0,1,2,3,0,0,3,4,3,2,3,4,0,1,2,3,4,1}},
-    {CtrlFlag::RB, {3,4,0,0,1,2,3,0,1,1,2,3,4,2,3,4,1,2,0,1,2}}
+    {CtrlFlag::RB, {3,4,0,0,1,2,3,0,1,1,2,3,4,2,3,4,1,2,0,1,2}},
+    {CtrlFlag::BBell, {1,2,3,0,1,2,0,1,2,3,4,0,1,0,3,0,1,2,0,1,2}},
 };
 
 inline const  map<CtrlFlag, SlipTable> centerSlipTables{};
@@ -237,7 +211,8 @@ inline const map<CtrlFlag, vector<Symbol>> leftTargetSymbolTable{
     {CtrlFlag::SuikaB, {Symbol::Suika}},
     {CtrlFlag::RedBB, {Symbol::RedSeven}},
     {CtrlFlag::BlueBB, {Symbol::BlueSeven}},
-    {CtrlFlag::RB, {Symbol::Bar}}
+    {CtrlFlag::RB, {Symbol::Bar}},
+    {CtrlFlag::BBell, {Symbol::Bell, Symbol::Cherry}}
 };
 
 inline const map<CtrlFlag, vector<Symbol>> centerTargetSymbolTable{
@@ -248,11 +223,12 @@ inline const map<CtrlFlag, vector<Symbol>> centerTargetSymbolTable{
     {CtrlFlag::SuikaB, {Symbol::Suika}},
     {CtrlFlag::RedBB, {Symbol::RedSeven}},
     {CtrlFlag::BlueBB, {Symbol::BlueSeven}},
-    {CtrlFlag::RB, {Symbol::Bar}}
+    {CtrlFlag::RB, {Symbol::Bar}},
+    {CtrlFlag::BBell, {Symbol::Bell}}
 };
 
 inline const map<CtrlFlag, vector<Symbol>> rightTargetSymbolTable{
-    {CtrlFlag::Miss, {Symbol::RedSeven, Symbol::BlueSeven, Symbol::Replay}},
+    {CtrlFlag::Miss, {Symbol::RedSeven, Symbol::BlueSeven, Symbol::Bar, Symbol::Cherry,Symbol::Replay}},
     {CtrlFlag::Bell, {Symbol::Bell}},
     {CtrlFlag::Replay, {Symbol::Replay}},
     {CtrlFlag::Cherry, {Symbol::Cherry, Symbol::BlueSeven, Symbol::Blank}},
@@ -260,5 +236,6 @@ inline const map<CtrlFlag, vector<Symbol>> rightTargetSymbolTable{
     {CtrlFlag::SuikaB, {Symbol::Suika, Symbol::Bar}},
     {CtrlFlag::RedBB, {Symbol::RedSeven, Symbol::Suika, Symbol::Cherry}},
     {CtrlFlag::BlueBB, {Symbol::BlueSeven, Symbol::Cherry, Symbol::Blank, Symbol::Bell}},
-    {CtrlFlag::RB, {Symbol::Bar, Symbol::Suika, Symbol::Cherry}}
+    {CtrlFlag::RB, {Symbol::Bar, Symbol::Suika, Symbol::Cherry}},
+    {CtrlFlag::BBell, {Symbol::Bell}}
 };

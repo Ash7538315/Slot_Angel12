@@ -2,6 +2,17 @@
 #include "SDL3/SDL_audio.h"
 #include "SDL3_mixer/SDL_mixer.h"
 
+
+void AudioManager::playBGM(MIX_Audio* bgm){
+    MIX_SetTrackAudio(BGMTrack, bgm);
+    MIX_PlayTrack(BGMTrack, -1);
+};
+
+void AudioManager::stopBGM(){
+    Sint64 frames = MIX_TrackMSToFrames(BGMTrack, 500); 
+    MIX_StopTrack(BGMTrack, frames);
+}
+
 void AudioManager::init(){
     bool ok = SDL_Init(SDL_INIT_AUDIO);
     bool mixOk = MIX_Init();
@@ -21,27 +32,40 @@ void AudioManager::init(){
     SDL_Log("mixer=%p", mixer);
     SDL_Log("error=%s", SDL_GetError());
     
-    stopReelSE = MIX_LoadAudio(mixer, "../asset/audio/se/stop_reel.wav", true);
-    startReelSE = MIX_LoadAudio(mixer, "../asset/audio/se/start_reel.wav", true);
-    SDL_Log("error=%s", SDL_GetError());
+    stopReelSE = MIX_LoadAudio(mixer, "../asset/se/stop_reel.wav", true);
+    startReelSE = MIX_LoadAudio(mixer, "../asset/se/start_reel.wav", true);
+    betSE = MIX_LoadAudio(mixer, "../asset/se/bet.wav", true);
 
     stopReelTrack = MIX_CreateTrack(mixer);
     startReelTrack = MIX_CreateTrack(mixer);
+    betTrack = MIX_CreateTrack(mixer);
 
     MIX_SetTrackAudio(stopReelTrack, stopReelSE);
     MIX_SetTrackAudio(startReelTrack, startReelSE);
+    MIX_SetTrackAudio(betTrack, betSE);
+
+    // RedBBBGM = MIX_LoadAudio(mixer, "../asset/bgm/Trap_Trap_Blitzkrieg_2.mp3", false);
+    BGMTrack = MIX_CreateTrack(mixer);
 }
 
-void AudioManager::playSE(const SESound& sound){
-    switch (sound) {
-        case SESound::StartReel:
-            MIX_PlayTrack(startReelTrack, 0);
-            return;
-        case SESound::StopReel:
-            MIX_PlayTrack(stopReelTrack, 0);
-            return;
-        default:
-            return;
+void AudioManager::SE(const ReelEvent& reelEvent, const StateEvent& stateEvent){
+    if (reelEvent.startReel) {
+        MIX_PlayTrack(startReelTrack, 0);
+    };
+    if (reelEvent.stopLeftReel || reelEvent.stopCenterReel || reelEvent.stopRightReel) {
+        MIX_PlayTrack(stopReelTrack, 0);
+    }
+    if (stateEvent.bet) {
+        MIX_PlayTrack(betTrack, 0);
+    }
+};
+
+void AudioManager::BGM(const StateEvent& stateEvent){
+    if (stateEvent.startRedBB) {
+        playBGM(RedBBBGM);
+    }
+    if (stateEvent.endBonus){
+        stopBGM();
     }
 };
 
