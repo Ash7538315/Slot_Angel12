@@ -6,13 +6,12 @@
 using namespace std;
 
 enum class CtrlFlag{
-    Unctrl,
     Miss,
     Bell,
     Replay,
+    Cherry,
     SuikaA,
     SuikaB,
-    Cherry,
     RedBB,
     BlueBB,
     RB,
@@ -21,7 +20,7 @@ enum class CtrlFlag{
 
 enum class ResultFlag{
     Miss,
-    BonusReachPattern,
+    BonusReach,
     BadPattern,
     Bell,
     Replay,
@@ -39,11 +38,11 @@ inline const map<CtrlFlag, vector<ResultFlag>> ctrlFlag2ResultFlag{
     {CtrlFlag::Bell, {ResultFlag::Bell}},
     {CtrlFlag::Replay, {ResultFlag::Replay}},
     {CtrlFlag::Cherry, {ResultFlag::Cherry, ResultFlag::Miss}},
-    {CtrlFlag::SuikaA, {ResultFlag::Suika, ResultFlag::BonusReachPattern, ResultFlag::Miss}},
-    {CtrlFlag::SuikaB, {ResultFlag::Suika, ResultFlag::BonusReachPattern, ResultFlag::Miss}},
-    {CtrlFlag::RedBB, {ResultFlag::RedBB, ResultFlag::BonusReachPattern, ResultFlag::Miss}},
-    {CtrlFlag::BlueBB, {ResultFlag::BlueBB, ResultFlag::BonusReachPattern, ResultFlag::Miss}},
-    {CtrlFlag::RB, {ResultFlag::RB, ResultFlag::BonusReachPattern, ResultFlag::Miss}},
+    {CtrlFlag::SuikaA, {ResultFlag::Suika, ResultFlag::BonusReach, ResultFlag::Miss}},
+    {CtrlFlag::SuikaB, {ResultFlag::Suika, ResultFlag::BonusReach, ResultFlag::Miss}},
+    {CtrlFlag::RedBB, {ResultFlag::RedBB, ResultFlag::BonusReach, ResultFlag::Miss}},
+    {CtrlFlag::BlueBB, {ResultFlag::BlueBB, ResultFlag::BonusReach, ResultFlag::Miss}},
+    {CtrlFlag::RB, {ResultFlag::RB, ResultFlag::BonusReach, ResultFlag::Miss}},
     {CtrlFlag::BBell, {ResultFlag::CBell, ResultFlag::BBell}}
 };
 
@@ -78,34 +77,34 @@ constexpr array<LineResult, 38> combinationTable{{
     {Symbol::RedSeven, Symbol::RedSeven, Symbol::RedSeven, ResultFlag::RedBB},
     {Symbol::BlueSeven, Symbol::BlueSeven, Symbol::BlueSeven, ResultFlag::BlueBB},
     {Symbol::Bar, Symbol::Bar, Symbol::Bar, ResultFlag::RB},
-    {Symbol::Bar, Symbol::Replay, Symbol::Replay, ResultFlag::BonusReachPattern},
-    {Symbol::Bar, Symbol::RedSeven, Symbol::RedSeven, ResultFlag::BonusReachPattern},
-    {Symbol::Bar, Symbol::RedSeven, Symbol::BlueSeven, ResultFlag::BonusReachPattern},
-    {Symbol::Bar, Symbol::RedSeven, Symbol::Bar, ResultFlag::BonusReachPattern},
-    {Symbol::Bar, Symbol::BlueSeven, Symbol::BlueSeven, ResultFlag::BonusReachPattern},
-    {Symbol::Bar, Symbol::BlueSeven, Symbol::RedSeven, ResultFlag::BonusReachPattern},
-    {Symbol::Bar, Symbol::BlueSeven, Symbol::Bar, ResultFlag::BonusReachPattern},
-    {Symbol::Bar, Symbol::Bar, Symbol::RedSeven, ResultFlag::BonusReachPattern},
-    {Symbol::Bar, Symbol::Bar, Symbol::BlueSeven, ResultFlag::BonusReachPattern},
-    {Symbol::RedSeven, Symbol::Cherry, Symbol::Cherry, ResultFlag::BonusReachPattern},
-    {Symbol::Suika, Symbol::Suika, Symbol::RedSeven, ResultFlag::BonusReachPattern},
-    {Symbol::RedSeven, Symbol::RedSeven, Symbol::BlueSeven, ResultFlag::BonusReachPattern},
-    {Symbol::RedSeven, Symbol::RedSeven, Symbol::Bar, ResultFlag::BonusReachPattern},
-    {Symbol::RedSeven, Symbol::BlueSeven, Symbol::BlueSeven, ResultFlag::BonusReachPattern},
-    {Symbol::RedSeven, Symbol::BlueSeven, Symbol::Bar, ResultFlag::BonusReachPattern},
-    {Symbol::RedSeven, Symbol::BlueSeven, Symbol::RedSeven, ResultFlag::BonusReachPattern},
-    {Symbol::RedSeven, Symbol::Bar, Symbol::RedSeven, ResultFlag::BonusReachPattern},
-    {Symbol::RedSeven, Symbol::Bar, Symbol::BlueSeven, ResultFlag::BonusReachPattern},
-    {Symbol::RedSeven, Symbol::Bar, Symbol::Bar, ResultFlag::BonusReachPattern},
-    {Symbol::BlueSeven, Symbol::Bar, Symbol::Bar, ResultFlag::BonusReachPattern},
-    {Symbol::BlueSeven, Symbol::Bar, Symbol::BlueSeven, ResultFlag::BonusReachPattern},
-    {Symbol::BlueSeven, Symbol::Bar, Symbol::RedSeven, ResultFlag::BonusReachPattern},
-    {Symbol::BlueSeven, Symbol::RedSeven, Symbol::RedSeven, ResultFlag::BonusReachPattern},
-    {Symbol::BlueSeven, Symbol::RedSeven, Symbol::BlueSeven, ResultFlag::BonusReachPattern},
-    {Symbol::BlueSeven, Symbol::RedSeven, Symbol::Bar, ResultFlag::BonusReachPattern},
-    {Symbol::BlueSeven, Symbol::BlueSeven, Symbol::RedSeven, ResultFlag::BonusReachPattern},
-    {Symbol::BlueSeven, Symbol::BlueSeven, Symbol::Bar, ResultFlag::BonusReachPattern},
-    {Symbol::BlueSeven, Symbol::Bell, Symbol::Bell, ResultFlag::BonusReachPattern},
+    {Symbol::Bar, Symbol::Replay, Symbol::Replay, ResultFlag::BonusReach},
+    {Symbol::Bar, Symbol::RedSeven, Symbol::RedSeven, ResultFlag::BonusReach},
+    {Symbol::Bar, Symbol::RedSeven, Symbol::BlueSeven, ResultFlag::BonusReach},
+    {Symbol::Bar, Symbol::RedSeven, Symbol::Bar, ResultFlag::BonusReach},
+    {Symbol::Bar, Symbol::BlueSeven, Symbol::BlueSeven, ResultFlag::BonusReach},
+    {Symbol::Bar, Symbol::BlueSeven, Symbol::RedSeven, ResultFlag::BonusReach},
+    {Symbol::Bar, Symbol::BlueSeven, Symbol::Bar, ResultFlag::BonusReach},
+    {Symbol::Bar, Symbol::Bar, Symbol::RedSeven, ResultFlag::BonusReach},
+    {Symbol::Bar, Symbol::Bar, Symbol::BlueSeven, ResultFlag::BonusReach},
+    {Symbol::RedSeven, Symbol::Cherry, Symbol::Cherry, ResultFlag::BonusReach},
+    {Symbol::Suika, Symbol::Suika, Symbol::RedSeven, ResultFlag::BonusReach},
+    {Symbol::RedSeven, Symbol::RedSeven, Symbol::BlueSeven, ResultFlag::BonusReach},
+    {Symbol::RedSeven, Symbol::RedSeven, Symbol::Bar, ResultFlag::BonusReach},
+    {Symbol::RedSeven, Symbol::BlueSeven, Symbol::BlueSeven, ResultFlag::BonusReach},
+    {Symbol::RedSeven, Symbol::BlueSeven, Symbol::Bar, ResultFlag::BonusReach},
+    {Symbol::RedSeven, Symbol::BlueSeven, Symbol::RedSeven, ResultFlag::BonusReach},
+    {Symbol::RedSeven, Symbol::Bar, Symbol::RedSeven, ResultFlag::BonusReach},
+    {Symbol::RedSeven, Symbol::Bar, Symbol::BlueSeven, ResultFlag::BonusReach},
+    {Symbol::RedSeven, Symbol::Bar, Symbol::Bar, ResultFlag::BonusReach},
+    {Symbol::BlueSeven, Symbol::Bar, Symbol::Bar, ResultFlag::BonusReach},
+    {Symbol::BlueSeven, Symbol::Bar, Symbol::BlueSeven, ResultFlag::BonusReach},
+    {Symbol::BlueSeven, Symbol::Bar, Symbol::RedSeven, ResultFlag::BonusReach},
+    {Symbol::BlueSeven, Symbol::RedSeven, Symbol::RedSeven, ResultFlag::BonusReach},
+    {Symbol::BlueSeven, Symbol::RedSeven, Symbol::BlueSeven, ResultFlag::BonusReach},
+    {Symbol::BlueSeven, Symbol::RedSeven, Symbol::Bar, ResultFlag::BonusReach},
+    {Symbol::BlueSeven, Symbol::BlueSeven, Symbol::RedSeven, ResultFlag::BonusReach},
+    {Symbol::BlueSeven, Symbol::BlueSeven, Symbol::Bar, ResultFlag::BonusReach},
+    {Symbol::BlueSeven, Symbol::Bell, Symbol::Bell, ResultFlag::BonusReach},
 }};
 
 constexpr array<LineResult, 2> combinationTableInBonus{{
@@ -146,13 +145,13 @@ constexpr array<Symbol, 21> centerReelStrips{
     Symbol::Bell,
     Symbol::Bar,
     Symbol::Replay,
+    Symbol::Bell,
     Symbol::Cherry,
-    Symbol::Bell,
-    Symbol::Replay,
-    Symbol::RedSeven,
-    Symbol::Replay,
-    Symbol::Bell,
     Symbol::Suika,
+    Symbol::Cherry,
+    Symbol::Replay,
+    Symbol::Bell,
+    Symbol::Cherry,
     Symbol::BlueSeven,
     Symbol::Replay,
     Symbol::Bell,
@@ -198,6 +197,19 @@ inline const map<CtrlFlag, SlipTable> leftSlipTables {
     {CtrlFlag::RB, {3,4,0,0,1,2,3,0,1,1,2,3,4,2,3,4,1,2,0,1,2}},
     {CtrlFlag::BBell, {1,2,3,0,1,2,0,1,2,3,4,0,1,0,3,0,1,2,0,1,2}},
 };
+
+constexpr array<SlipTable, 10> test{{
+    {3,4,0,1,1,3,4,0,0,1,2,0,1,2,3,0,1,2,0,1,2},  // Miss 
+    {0,1,0,1,1,2,3,0,1,2,3,4,1,2,3,0,1,2,1,2,3},  // Bell
+    {4,0,0,0,1,2,3,4,0,1,2,3,2,3,4,0,1,0,1,2,3},  // Replay
+    {2,3,4,0,0,1,0,1,2,3,4,0,0,1,0,1,2,3,0,0,1},  // Cherry
+    {3,4,0,0,1,2,3,0,1,2,3,0,1,2,3,4,0,0,0,1,2},  // SuikaA
+    {3,4,0,0,1,2,3,0,1,0,0,0,1,2,3,4,0,0,0,1,2},  // SuikaB
+    {0,0,1,1,2,3,4,4,1,2,3,0,1,2,3,4,0,0,0,1,2},  // RedBB
+    {3,4,0,0,1,2,3,0,0,3,4,3,2,3,4,0,1,2,3,4,1},  // BlueBB
+    {3,4,0,0,1,2,3,0,1,1,2,3,4,2,3,4,1,2,0,1,2},  // RB
+    {1,2,3,0,1,2,0,1,2,3,4,0,1,0,3,0,1,2,0,1,2},  // BBell
+}};
 
 inline const  map<CtrlFlag, SlipTable> centerSlipTables{};
 inline const map<CtrlFlag, SlipTable> rightSlipTables{};

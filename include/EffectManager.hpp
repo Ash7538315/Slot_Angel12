@@ -1,6 +1,5 @@
 #pragma once
 #include "ReelManager.hpp"
-#include "StateManager.hpp"
 
 struct FlashState{
     bool isFlash = false;

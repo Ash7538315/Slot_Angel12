@@ -113,7 +113,7 @@ inline const Flag none{
     .name = "none",
     .allocateNum = 0,
     .payout = 0,
-    .ctrl = CtrlFlag::Unctrl,
+    .ctrl = CtrlFlag::Miss,
     .result = ResultFlag::BadPattern
 };
 

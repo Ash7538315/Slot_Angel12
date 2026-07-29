@@ -17,7 +17,7 @@ private:
 
     bool running;
 public:
-    void init();
-    void run();
+void run();
+void init();
     void exit();
 };

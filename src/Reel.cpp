@@ -5,6 +5,7 @@
 #include <cmath>
 #include <vector>
 #include <iostream>
+#include <algorithm>
 
 using namespace std;
 
@@ -33,17 +34,22 @@ ReelsResult check5Line(const ColSymbols& leftStopSymbols, const ColSymbols& cent
         };
     }
 
-
-
     switch (reelsResults.size()) {
         case 0:
             return {ResultFlag::Miss, WinningLine::None};
         case 1:
             return reelsResults.front();
         default:
-            if  (reelsResults.front().flag == ResultFlag::Cherry){
+            auto it = find_if(
+                reelsResults.begin(), 
+                reelsResults.end(), 
+                [](const ReelsResult& r){
+                    return r.flag == ResultFlag::Cherry;
+                });
+            if (it != reelsResults.end()){
                 return {ResultFlag::BadPattern, WinningLine::None};
-            }
+            };
+
             return reelsResults.front();
     }
 };
@@ -63,9 +69,16 @@ ReelsResult check1Line(const ColSymbols& leftStopSymbols, const ColSymbols& cent
         case 1:
             return reelsResults.front();
         default:
-            if  (reelsResults.front().flag == ResultFlag::Cherry){
+            auto it = find_if(
+                reelsResults.begin(), 
+                reelsResults.end(), 
+                [](const ReelsResult& r){
+                    return r.flag == ResultFlag::Cherry;
+                });
+            if (it != reelsResults.end()){
                 return {ResultFlag::BadPattern, WinningLine::None};
-            }
+            };
+
             return reelsResults.front();
     }
 };
