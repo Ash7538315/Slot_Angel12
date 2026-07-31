@@ -5,6 +5,11 @@
 
 using namespace std;
 
+namespace ReelConst {
+    constexpr int nsymbol = 21;
+    constexpr int nCtrlFlag = 10;
+}
+
 enum class CtrlFlag{
     Miss,
     Bell,

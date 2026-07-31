@@ -10,11 +10,12 @@ namespace GameConst{
     inline fs::path rootPath = PROJECT_ROOT;
 
     constexpr int symbolWidth = 300;
-    constexpr int symbollHeight = 132;
+    constexpr int symbolHeight = 132;
+    constexpr int SymbolMargin = symbolHeight / 12;
 
     constexpr double timestep = 1.00 / 119.6;
     constexpr int nsymbol = 21;
-    constexpr float scrollSpeed = nsymbol * symbollHeight / 0.85 * timestep;
+    constexpr float scrollSpeed = nsymbol * symbolHeight / 0.85 * timestep;
 
     constexpr int reelSpace = 15;
     constexpr int windowWidth = 960;
@@ -27,20 +28,20 @@ namespace GameConst{
         reelSpace, // x
         0, // y
         GameConst::symbolWidth,  // w
-        GameConst::symbollHeight * 3 + GameConst::symbollHeight / 6.0   // h
+        GameConst::symbolHeight * 3 + GameConst::symbolHeight / 6.0   // h
     };
 
     constexpr SDL_FRect centerDst{
         reelSpace * 2 + symbolWidth, // x
         0, // y
         GameConst::symbolWidth,  // w
-        GameConst::symbollHeight * 3 + GameConst::symbollHeight / 6.0   // h
+        GameConst::symbolHeight * 3 + GameConst::symbolHeight / 6.0   // h
     };
 
     constexpr SDL_FRect rightDst{
         reelSpace * 3 + symbolWidth * 2, // x
         0, // y
         GameConst::symbolWidth,  // w
-        GameConst::symbollHeight * 3 + GameConst::symbollHeight / 6.0   // h
+        GameConst::symbolHeight * 3 + GameConst::symbolHeight / 6.0   // h
     };
 };

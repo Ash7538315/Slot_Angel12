@@ -7,13 +7,13 @@ using namespace std;
 
 void ReelManager::init(){
     leftReel.state = ReelState::Stop;
-    leftReel.reelPos = GameConst::symbollHeight * 3 - GameConst::symbollHeight / 12.0;
+    leftReel.reelPos = GameConst::symbolHeight * 3 - GameConst::symbolHeight / 12.0;
 
     centerReel.state = ReelState::Stop;
-    centerReel.reelPos = GameConst::symbollHeight * 3 - GameConst::symbollHeight / 12.0;
+    centerReel.reelPos = GameConst::symbolHeight * 3 - GameConst::symbolHeight / 12.0;
 
     rightReel.state = ReelState::Stop;
-    rightReel.reelPos = GameConst::symbollHeight * 3 - GameConst::symbollHeight / 12.0;
+    rightReel.reelPos = GameConst::symbolHeight * 3 - GameConst::symbolHeight / 12.0;
 
     reelsState = ReelsState::WaitLever;
 
